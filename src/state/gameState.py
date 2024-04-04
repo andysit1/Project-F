@@ -13,7 +13,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 500
+        self.speed = 400
 
     def handle_event(self, event, dt):
         if event.type == pg.KEYDOWN:
@@ -40,8 +40,6 @@ class Player(pg.sprite.Sprite):
       self.pos += self.vel
       self.rect.center = self.pos
 
-
-
 class GameState(State):
   def __init__(self, engine):
     super().__init__(engine)
@@ -54,8 +52,9 @@ class GameState(State):
     self.background_rects = [pg.Rect(randrange(-3000, 3001), randrange(-3000, 3001), 20, 20)
                         for _ in range(500)]
     self.dt = 0
-
+    self.current_attack = 0
     #camera variables
+
 
   def on_draw(self, surface):
     surface.fill((30, 30, 30))
@@ -70,8 +69,27 @@ class GameState(State):
 
     surface.blit(self.player.image, self.player.rect.topleft+offset)
 
+    origin = self.player.rect.topleft+offset
+    pg.draw.circle(surface, "yellow", origin, 5)
+
+    if self.current_attack > 0:
+        attack_rect = pg.rect.Rect(origin[0] + self.player.rect.width, origin[1],self.player.rect.width * 2, self.player.rect.height)
+        pg.draw.rect(surface, "red", attack_rect)
+
+        rect = pg.Rect(origin[0] - 36, origin[1] - 50, 100, 100)  # Rectangle to contain the arc
+        pg.draw.arc(surface, "red", rect, 0, 3.14, 5)  # Draw half circle (0 to pi radians)
+
+        self.current_attack -= 0.2
+
+    # origin = self.player.pos
+    # attack_rect = pg.Rect()
+
   def on_event(self, event):
     self.player.handle_event(event=event, dt=self.dt)
+    if event.type == pg.KEYUP and event.key == pg.K_SPACE:
+        self.current_attack = 2
+
+
 
   def on_update(self, delta):
     self.dt = delta

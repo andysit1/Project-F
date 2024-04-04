@@ -123,7 +123,6 @@ class DisplayEngine:
 
             self.machine.current.on_draw(self.surface)
             self.machine.current.on_update(dt)
-            print(dt)
 
             try:
                 self.machine.current.handle_movement(event=None, delta=dt)

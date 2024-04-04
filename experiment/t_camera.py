@@ -39,7 +39,6 @@ class Player(pg.sprite.Sprite):
         self.pos += self.vel
         self.rect.center = self.pos
 
-
 def main():
     pg.init()
     screen = pg.display.set_mode((800, 600))
