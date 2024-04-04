@@ -37,9 +37,10 @@ class Player(pg.sprite.Sprite):
             elif event.key == pg.K_s and self.vel.y > 0:
                 self.vel.y = 0
 
-        # Normalizes the velocity of the diagonal movement vector
-        if self.vel.x != 0 and self.vel.y != 0:
+        try:
             self.vel = self.vel.normalize() * self.speed * dt
+        except:
+            pass
 
     def update(self):
         # Move the player.
