@@ -3,6 +3,7 @@ from random import randrange
 from pygame.math import Vector2
 from modules.state_machine import State
 import time
+import math
 
 class Player(pg.sprite.Sprite):
 
@@ -13,9 +14,10 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 400
+        self.speed = 4
 
     def handle_event(self, event, dt):
+        #Handles player movement
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_d:
                 self.vel.x = self.speed * dt
@@ -30,10 +32,14 @@ class Player(pg.sprite.Sprite):
                 self.vel.x = 0
             elif event.key == pg.K_a and self.vel.x < 0:
                 self.vel.x = 0
-            elif event.key == pg.K_w:
+            elif event.key == pg.K_w and self.vel.y < 0:
                 self.vel.y = 0
-            elif event.key == pg.K_s:
+            elif event.key == pg.K_s and self.vel.y > 0:
                 self.vel.y = 0
+
+        # Normalizes the velocity of the diagonal movement vector
+        if self.vel.x != 0 and self.vel.y != 0:
+            self.vel = self.vel.normalize() * self.speed
 
     def update(self):
         # Move the player.
@@ -83,6 +89,11 @@ class GameState(State):
 
     # origin = self.player.pos
     # attack_rect = pg.Rect()
+
+    # Displays character velocity for testing
+    font = pg.font.SysFont('comicsans', 15)
+    velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))
+    surface.blit(velocity_text, (20, 20))
 
   def on_event(self, event):
     self.player.handle_event(event=event, dt=self.dt)
