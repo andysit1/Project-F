@@ -37,31 +37,31 @@ class Player(pg.sprite.Sprite):
 
     def update(self):
         # Move the player.
-      self.pos += self.vel
-      self.rect.center = self.pos
+        self.pos += self.vel
+        self.rect.center = self.pos
 
 class GameState(State):
-  def __init__(self, engine):
-    super().__init__(engine)
+    def __init__(self, engine):
+        super().__init__(engine)
 
-    self.clock = pg.time.Clock()
-    all_sprites = pg.sprite.Group()
-    self.camera = Vector2(400, 300)
-    self.player = Player((400, 300), all_sprites)
+        self.clock = pg.time.Clock()
+        all_sprites = pg.sprite.Group()
+        self.camera = Vector2(400, 300)
+        self.player = Player((400, 300), all_sprites)
 
-    self.background_rects = [pg.Rect(randrange(-3000, 3001), randrange(-3000, 3001), 20, 20)
-                        for _ in range(500)]
-    self.dt = 0
-    self.current_attack = 0
-    #camera variables
+        self.background_rects = [pg.Rect(randrange(-3000, 3001), randrange(-3000, 3001), 20, 20)
+                            for _ in range(500)]
+        self.dt = 0
+        self.current_attack = 0
+        #camera variables
 
 
-  def on_draw(self, surface):
-    surface.fill((30, 30, 30))
+    def on_draw(self, surface):
+        surface.fill((30, 30, 30))
 
-    heading = self.player.pos - self.camera
-    self.camera += heading * 0.05
-    offset = -self.camera + Vector2(400, 300)
+        heading = self.player.pos - self.camera
+        self.camera += heading * 0.05
+        offset = -self.camera + Vector2(400, 300)
 
     for background_rect in self.background_rects:
             topleft = background_rect.topleft + offset
@@ -84,13 +84,13 @@ class GameState(State):
     # origin = self.player.pos
     # attack_rect = pg.Rect()
 
-  def on_event(self, event):
-    self.player.handle_event(event=event, dt=self.dt)
-    if event.type == pg.KEYUP and event.key == pg.K_SPACE:
-        self.current_attack = 2
+    def on_event(self, event):
+        self.player.handle_event(event=event, dt=self.dt)
+        if event.type == pg.KEYUP and event.key == pg.K_SPACE:
+            self.current_attack = 2
 
 
 
-  def on_update(self, delta):
-    self.dt = delta
-    self.player.update()
+    def on_update(self, delta):
+        self.dt = delta
+        self.player.update()
