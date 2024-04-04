@@ -86,7 +86,7 @@ class GameState(State):
 
   def on_event(self, event):
     self.player.handle_event(event=event, dt=self.dt)
-    if event.type == pg.KEYUP and event.key == pg.K_SPACE:
+    if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
         self.current_attack = 2
 
 
