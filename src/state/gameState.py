@@ -14,7 +14,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 4
+        self.speed = 400
 
     def handle_event(self, event, dt):
         #Handles player movement
@@ -39,7 +39,7 @@ class Player(pg.sprite.Sprite):
 
         # Normalizes the velocity of the diagonal movement vector
         if self.vel.x != 0 and self.vel.y != 0:
-            self.vel = self.vel.normalize() * self.speed
+            self.vel = self.vel.normalize() * self.speed * dt
 
     def update(self):
         # Move the player.
