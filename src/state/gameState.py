@@ -62,7 +62,6 @@ class GameState(State):
     self.current_attack = 0
     #camera variables
 
-
   def on_draw(self, surface):
     surface.fill((30, 30, 30))
 
@@ -100,8 +99,6 @@ class GameState(State):
     self.player.handle_event(event=event, dt=self.dt)
     if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
         self.current_attack = 2
-
-
 
   def on_update(self, delta):
     self.dt = delta

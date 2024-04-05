@@ -12,6 +12,20 @@ WORLD_WIDTH = 1600
 WORLD_HEIGHT = 1200
 BACKGROUND_COLOR = (255, 255, 255)
 
+#notes
+  #this was a dumbass idea
+
+#lessons
+  #we need to load the game at the start so we dont have to worry about objects
+  #only time we need to blit should be on conditional pop ups
+  #got to design the game around preloaded data to reduce the worry about position
+  #everything is player located it should else it might be hard to handle
+  #good methods to have was
+    #screen_to_world()
+    #get_world_pos
+
+
+
 # Create the world surface
 world_surface = pg.Surface((WORLD_WIDTH, WORLD_HEIGHT))
 
@@ -29,6 +43,7 @@ class Player(pg.sprite.Sprite):
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
         self.speed = 4
+        self.attack : bool = False
 
     def handle_event(self, event):
         #Handles player movement
@@ -41,6 +56,8 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = -self.speed
             elif event.key == pg.K_s:
                 self.vel.y = self.speed
+            elif event.key == pg.K_SPACE:
+                self.attack = True
         elif event.type == pg.KEYUP:
             if event.key == pg.K_d and self.vel.x > 0:
                 self.vel.x = 0
@@ -56,6 +73,15 @@ class Player(pg.sprite.Sprite):
         except:
             pass
 
+    def get_attack_rect(self):
+        return pg.rect.Rect(
+                self.pos.x,
+                self.pos.y,
+                self.image.get_width(),
+                self.image.get_height()
+              )
+
+
     def update(self):
         # Move the player.
       self.pos += self.vel
@@ -69,8 +95,6 @@ class Camera:
         self.origin = Vector2(SCREEN_WIDTH // 2, SCREEN_HEIGHT //2)
         self.viewP = self.origin.copy()
 
-
-
     def viewpoint(self) -> pg.Surface:
         pass
 
@@ -81,14 +105,12 @@ class Camera:
         self.origin += heading * 0.05
         return -self.origin + Vector2(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
 
-
     def update(self):
         #calculate the difference between this camera and enity
         heading = self.focus.pos - self.origin
         self.viewP += heading * 0.05
         goto = -self.viewP + self.origin
         # print("update", goto)
-
 
 all_sprites = pg.sprite.Group()
 
@@ -102,7 +124,7 @@ camera = Camera(player)
 
 # Main game loop
 clock = pg.time.Clock()
-
+timer = 0
 running = True
 while running:
     for event in pg.event.get():
@@ -120,15 +142,17 @@ while running:
         topleft = background_rect.topleft
         pg.draw.rect(world_surface, (200, 50, 70), (topleft, background_rect.size))
 
-
     # Draw
     world_surface.blit(player.image, player.rect.topleft)
+    if player.attack:
+      timer += 0.2
+      pg.draw.rect(world_surface, "red", player.get_attack_rect())
+      if int(timer) == 2:
+          player.attack = False
+          timer = 0
     camera.view.blit(world_surface, camera.viewpointPosition())
     # print(camera.origin)
-
-
     #draw the camera surface... here...
-
     pg.display.flip()
     clock.tick(60)
 
