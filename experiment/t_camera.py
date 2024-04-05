@@ -12,7 +12,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 200
+        self.speed = 4
 
     def handle_event(self, event):
         if event.type == pg.KEYDOWN:
@@ -74,6 +74,7 @@ def main():
             pg.draw.rect(screen, (200, 50, 70), (topleft, background_rect.size))
 
         screen.blit(player.image, player.rect.topleft+offset)
+        print(offset)
         pg.display.flip()
         clock.tick(60)
 
