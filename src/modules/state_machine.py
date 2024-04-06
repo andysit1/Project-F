@@ -103,17 +103,13 @@ class DisplayEngine:
         self.running = True
         self.delta = 0
         self.fps = fps
-
         self.machine = Machine()
 
     def loop(self):
         """
         Main game loop which handles all draw, update, on_event, and movement
         """
-        previous_time = time.time()
         while self.running:
-            dt = time.time() - previous_time
-            previous_time = time.time()
             self.machine.update()
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
@@ -122,15 +118,14 @@ class DisplayEngine:
                     self.machine.current.on_event(event)
 
             self.machine.current.on_draw(self.surface)
-            self.machine.current.on_update(dt)
+            self.machine.current.on_update()
 
             try:
-                self.machine.current.handle_movement(event=None, delta=dt)
+                self.machine.current.handle_movement()
             except:
                 pass
 
             pygame.display.flip()
-            self.delta = self.clock.tick(self.fps)
 
 
     def run(self, state):

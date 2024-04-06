@@ -2,11 +2,8 @@ import pygame as pg
 from random import randrange
 from pygame.math import Vector2
 from modules.state_machine import State
-import time
-import math
 
 class Player(pg.sprite.Sprite):
-
     def __init__(self, pos, *groups):
         super().__init__(*groups)
         self.image = pg.Surface((30, 30))
@@ -14,9 +11,9 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 3 #no longer * dt, contant speed
+        self.speed = 0.9 #no longer * dt, contant speed
 
-    def handle_event(self, event, dt):
+    def handle_event(self, event):
         #Handles player movement
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_d:
@@ -96,10 +93,9 @@ class GameState(State):
     surface.blit(velocity_text, (20, 20))
 
   def on_event(self, event):
-    self.player.handle_event(event=event, dt=self.dt)
+    self.player.handle_event(event=event)
     if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
         self.current_attack = 2
 
-  def on_update(self, delta):
-    self.dt = delta
+  def on_update(self):
     self.player.update()

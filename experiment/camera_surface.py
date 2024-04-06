@@ -2,6 +2,10 @@ import pygame as pg
 from pygame.math import Vector2
 import sys
 from random import randrange
+
+
+
+#poo
 # Initialize pg
 pg.init()
 
