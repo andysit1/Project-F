@@ -3,6 +3,7 @@ from random import randrange
 from pygame.math import Vector2
 from modules.state_machine import State
 from components.player import Player
+from components.enemy import Enemy
 
 '''
   --- GameState class ---
@@ -29,8 +30,10 @@ class GameState(State):
     self.camera = Vector2(400, 300)
     self.player = Player((400, 300), all_sprites)
 
-    # Spawns 500 test rectangles
-    self.background_rects = [pg.Rect(randrange(-3000, 3001), randrange(-3000, 3001), 20, 20) for _ in range(500)]
+    # Spawns 500 enemies
+    self.enemies = []
+    for _ in range(500):
+      self.enemies.append(Enemy((randrange(-3000, 3001), randrange(-3000, 3001)), all_sprites))
 
   # What is done on each frame when drawn
   def on_draw(self, surface):
@@ -41,10 +44,9 @@ class GameState(State):
     self.camera += heading * 0.05
     offset = -self.camera + Vector2(400, 300)
 
-    # Draws all background rectangles
-    for background_rect in self.background_rects:
-      topleft = background_rect.topleft + offset
-      pg.draw.rect(surface, (200, 50, 70), (topleft, background_rect.size))
+    # Draws all enemies
+    for enemy in self.enemies:
+      surface.blit(enemy.image, enemy.rect.topleft+offset)
 
     # Draws player
     surface.blit(self.player.image, self.player.rect.topleft+offset)
@@ -66,3 +68,5 @@ class GameState(State):
   def on_update(self, delta):
     self.dt = delta
     self.player.update()
+    for enemy in self.enemies:
+      enemy.update()
