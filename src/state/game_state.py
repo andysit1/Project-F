@@ -37,7 +37,7 @@ class GameState(State):
 
   # What is done on each frame when drawn
   def on_draw(self, surface):
-    surface.fill((30, 30, 30))
+    surface.fill((100, 170, 220))
 
     # Camera movement
     heading = self.player.pos - self.camera
@@ -50,10 +50,6 @@ class GameState(State):
 
     # Draws player
     surface.blit(self.player.image, self.player.rect.topleft+offset)
-
-    # Draws a yellow circle at the player's origin
-    origin = self.player.rect.topleft+offset
-    pg.draw.circle(surface, "yellow", origin, 5)
 
     # --- Junk test code for info on screen ---
     # velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))

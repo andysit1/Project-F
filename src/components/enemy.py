@@ -16,8 +16,8 @@ from pygame.math import Vector2
 class Enemy(pg.sprite.Sprite):
     def __init__(self, pos, *groups):
         super().__init__(*groups)
-        self.image = pg.Surface((20, 20)) 
-        self.image.fill(pg.Color('red'))
+        #import, load, and convert image to Surface, then scale it to 40x40
+        self.image = pg.transform.scale(pg.image.load("./assets/fly.png").convert_alpha() , (40, 40))
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
