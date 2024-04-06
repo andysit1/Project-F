@@ -14,19 +14,19 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 400
+        self.speed = 3 #no longer * dt, contant speed
 
     def handle_event(self, event, dt):
         #Handles player movement
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_d:
-                self.vel.x = self.speed * dt
+                self.vel.x = self.speed
             elif event.key == pg.K_a:
-                self.vel.x = -self.speed * dt
+                self.vel.x = -self.speed
             elif event.key == pg.K_w:
-                self.vel.y = -self.speed * dt
+                self.vel.y = -self.speed
             elif event.key == pg.K_s:
-                self.vel.y = self.speed * dt
+                self.vel.y = self.speed
         elif event.type == pg.KEYUP:
             if event.key == pg.K_d and self.vel.x > 0:
                 self.vel.x = 0
@@ -38,7 +38,7 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
 
         try:
-            self.vel = self.vel.normalize() * self.speed * dt
+            self.vel = self.vel.normalize() * self.speed
         except:
             pass
 
@@ -92,7 +92,7 @@ class GameState(State):
 
     # Displays character velocity for testing
     font = pg.font.SysFont('comicsans', 15)
-    velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))
+    velocity_text = font.render(f"Velocity: {round(self.player.vel.length())}", True, pg.Color('white'))
     surface.blit(velocity_text, (20, 20))
 
   def on_event(self, event):
