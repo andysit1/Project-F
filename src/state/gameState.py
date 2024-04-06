@@ -2,8 +2,11 @@ import pygame as pg
 from random import randrange
 from pygame.math import Vector2
 from modules.state_machine import State
+import time
+import math
 
 class Player(pg.sprite.Sprite):
+
     def __init__(self, pos, *groups):
         super().__init__(*groups)
         self.image = pg.Surface((30, 30))
@@ -11,19 +14,19 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 0.9 #no longer * dt, contant speed
+        self.speed = 400
 
-    def handle_event(self, event):
+    def handle_event(self, event, dt):
         #Handles player movement
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_d:
-                self.vel.x = self.speed
+                self.vel.x = self.speed * dt
             elif event.key == pg.K_a:
-                self.vel.x = -self.speed
+                self.vel.x = -self.speed * dt
             elif event.key == pg.K_w:
-                self.vel.y = -self.speed
+                self.vel.y = -self.speed * dt
             elif event.key == pg.K_s:
-                self.vel.y = self.speed
+                self.vel.y = self.speed * dt
         elif event.type == pg.KEYUP:
             if event.key == pg.K_d and self.vel.x > 0:
                 self.vel.x = 0
@@ -35,7 +38,8 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
 
         try:
-            self.vel = self.vel.normalize() * self.speed
+            self.vel = round(self.vel.normalize() * self.speed * dt, 3)
+            print(self.vel)
         except:
             pass
 
@@ -89,13 +93,14 @@ class GameState(State):
 
     # Displays character velocity for testing
     font = pg.font.SysFont('comicsans', 15)
-    velocity_text = font.render(f"Velocity: {round(self.player.vel.length())}", True, pg.Color('white'))
+    velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))
     surface.blit(velocity_text, (20, 20))
 
   def on_event(self, event):
-    self.player.handle_event(event=event)
+    self.player.handle_event(event=event, dt=self.dt)
     if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
         self.current_attack = 2
 
-  def on_update(self):
+  def on_update(self, delta):
+    self.dt = delta
     self.player.update()
