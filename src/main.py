@@ -7,6 +7,9 @@ sys.path.append(current_dir)
 from modules.state_machine import DisplayEngine
 from state.gameState import GameState
 
+
+#hello poo
+
 def main():
     """
     The main function that initializes the pygame environment, sets up the game engine, and starts the game loop.
