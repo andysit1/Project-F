@@ -34,9 +34,6 @@ class Player(pg.sprite.Sprite):
             print('space')
 
 
-    
-    
-
     # Gets player movement vector based on key presses
     def player_movement(self, event, dt):
         # Checks for up, down, left, right arrow presses
