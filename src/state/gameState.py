@@ -38,7 +38,8 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
 
         try:
-            self.vel = self.vel.normalize() * self.speed * dt
+            self.vel = round(self.vel.normalize() * self.speed * dt, 3)
+            print(self.vel)
         except:
             pass
 

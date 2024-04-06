@@ -1,11 +1,9 @@
 import pygame
-import os
-import sys
-# Setup the environment by appending the current directory to the system path.
-current_dir = os.path.dirname(__file__)
-sys.path.append(current_dir)
 from modules.state_machine import DisplayEngine
 from state.gameState import GameState
+
+
+#hello poo
 
 def main():
     """

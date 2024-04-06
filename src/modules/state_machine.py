@@ -136,4 +136,3 @@ class DisplayEngine:
     def run(self, state):
         self.machine.current = state
         self.loop()
-
