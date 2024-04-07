@@ -9,9 +9,6 @@ from state.game_state import GameState
 def main():
     # Initializes all imported pygame modules
     pygame.init()
-
-
-
     # Start the game loop
     engine = DisplayEngine('Froggooo', 50, 1280, 720)
     # Start the game loop with the initial state set to LoginState

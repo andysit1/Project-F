@@ -22,6 +22,7 @@ class Player(pg.sprite.Sprite):
         self.right = pg.transform.scale(pg.image.load("./assets/player_assets/right.png").convert_alpha() , (70, 70))
         self.left = pg.transform.scale(pg.image.load("./assets/player_assets/left.png").convert_alpha() , (70, 70))
         self.image = self.down
+        self.keypressed = []
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
@@ -29,8 +30,7 @@ class Player(pg.sprite.Sprite):
 
     # Handles player actions based on key presses
     def handle_event(self, event, dt):
-        # Moves the player
-        self.player_movement(event, dt)
+        self.player_movement(event, dt) # Moves the player
         
         # Will be for attacking --WIP--
         if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
@@ -40,24 +40,33 @@ class Player(pg.sprite.Sprite):
     # Gets player movement vector based on key presses
     def player_movement(self, event, dt):
         # Checks for up, down, left, right arrow presses
+        # Moves velocity + changes 'keypressed' that is used in updating character images
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_UP:
                 self.vel.y = -self.speed * dt
+                self.keypressed.append(self.up)
             elif event.key == pg.K_DOWN:
                 self.vel.y = self.speed * dt
+                self.keypressed.append(self.down)
             elif event.key == pg.K_RIGHT:
                 self.vel.x = self.speed * dt
+                self.keypressed.append(self.right)
             elif event.key == pg.K_LEFT:
                 self.vel.x = -self.speed * dt
+                self.keypressed.append(self.left)
         elif event.type == pg.KEYUP:
             if event.key == pg.K_UP and self.vel.y < 0:
                 self.vel.y = 0
+                self.keypressed.remove(self.up)
             elif event.key == pg.K_DOWN and self.vel.y > 0:
                 self.vel.y = 0
+                self.keypressed.remove(self.down)
             elif event.key == pg.K_RIGHT and self.vel.x > 0:
                 self.vel.x = 0
+                self.keypressed.remove(self.right)
             elif event.key == pg.K_LEFT and self.vel.x < 0:
                 self.vel.x = 0
+                self.keypressed.remove(self.left)
 
         # Normalizes velocity vector in the diagonals (as cant normalize a vector of 0, which happens when not diagonal)
         try:
@@ -71,16 +80,8 @@ class Player(pg.sprite.Sprite):
         self.pos += self.vel
         self.rect.center = self.pos
 
-        # ---INCOMPLETE---, shouldnt overwrite vertical direction with horizontal direction, should keep whichever
-        #                   was pressed first, like SDV
-        # Flips player image based on direction of movement
-        
-        if (self.vel.x > 0):
-            self.image = self.right
-        elif (self.vel.x < 0):
-            self.image = self.left
-        elif (self.vel.y > 0):
-            self.image = self.down
-        elif (self.vel.y < 0):
-            self.image = self.up
-        
+        # Changes player image based on direction
+        if (self.vel.length() > 0):
+            self.image = self.keypressed[0]
+        else:
+            self.keypressed.clear()
