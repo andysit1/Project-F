@@ -5,6 +5,33 @@ from modules.state_machine import State
 import time
 import math
 
+
+class Camera:
+    def __init__(self, focus):
+        #focus/lock on player
+        self.focus : Player = focus
+        self.view : pg.Surface = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+        self.origin = Vector2(SCREEN_WIDTH // 2, SCREEN_HEIGHT //2)
+        self.viewP = self.origin.copy()
+
+    def viewpoint(self) -> pg.Surface:
+        pass
+
+    def viewpointPosition(self):
+        # Calculate the difference between the player and the center of the screen
+        heading = self.focus.pos - self.origin
+        # Move the camera gradually towards the player
+        self.origin += heading * 0.05
+        return -self.origin + Vector2(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+
+    def update(self):
+        #calculate the difference between this camera and enity
+        heading = self.focus.pos - self.origin
+        self.viewP += heading * 0.05
+        goto = -self.viewP + self.origin
+        # print("update", goto)
+
+
 class Player(pg.sprite.Sprite):
 
     def __init__(self, pos, *groups):
