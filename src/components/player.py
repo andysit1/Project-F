@@ -34,9 +34,6 @@ class Player(pg.sprite.Sprite):
             print('space')
 
 
-    
-    
-
     # Gets player movement vector based on key presses
     def player_movement(self, event, dt):
         # Checks for up, down, left, right arrow presses
@@ -71,6 +68,8 @@ class Player(pg.sprite.Sprite):
         self.pos += self.vel
         self.rect.center = self.pos
 
+        # ---INCOMPLETE---, shouldnt overwrite vertical direction with horizontal direction, should keep whichever
+        #                   was pressed first, like SDV
         # Flips player image based on direction of movement
         if (self.vel.x > 0):
             self.image = self.og_image
