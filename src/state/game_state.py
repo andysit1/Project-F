@@ -55,10 +55,10 @@ class GameState(State):
     #preset the world size to 4000, 4000 pixels
     self.world_surface = pg.Surface((4000, 4000))
 
-    # Spawns 500 enemies
-    self.enemies = []
-    for _ in range(500):
-      self.enemies.append(Enemy((randrange(-3000, 3001), randrange(-3000, 3001)), all_sprites))
+    # Spawns 250 fly enemies at random locations
+    self.flies = []
+    for _ in range(250):
+      self.flies.append(Enemy((randrange(-3000, 3001), randrange(-3000, 3001)),"fly", all_sprites))
 
   # What is done on each frame when drawn
   def on_draw(self, surface):
@@ -66,9 +66,9 @@ class GameState(State):
     self.world_surface.fill((100, 170, 220))
 
     #DRAWING IN WORLD
-    # Draws all enemies
-    for enemy in self.enemies:
-      self.world_surface.blit(enemy.image, enemy.rect.topleft)
+    # Draws all fly enemies
+    for fly in self.flies:
+      self.world_surface.blit(fly.image, fly.rect.topleft)
 
     #draws player based in world location on surface
     self.world_surface.blit(self.player.image, self.player.rect.topleft)
@@ -92,5 +92,6 @@ class GameState(State):
   def on_update(self, delta):
     self.dt = delta
     self.player.update()
-    for enemy in self.enemies:
-      enemy.update()
+    # Updates all fly enemies
+    for fly in self.flies:
+      fly.update(self.player, delta)
