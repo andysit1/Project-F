@@ -17,8 +17,11 @@ class Player(pg.sprite.Sprite):
     def __init__(self, pos, *groups):
         super().__init__(*groups)
         #import, load, and convert image to Surface, then scale it to 70x70
-        self.og_image= pg.transform.scale(pg.image.load("./assets/el_froge.png").convert_alpha() , (70, 70))
-        self.image = self.og_image
+        self.up = pg.transform.scale(pg.image.load("./assets/player_assets/up.png").convert_alpha() , (70, 70))
+        self.down = pg.transform.scale(pg.image.load("./assets/player_assets/down.png").convert_alpha() , (70, 70))
+        self.right = pg.transform.scale(pg.image.load("./assets/player_assets/right.png").convert_alpha() , (70, 70))
+        self.left = pg.transform.scale(pg.image.load("./assets/player_assets/left.png").convert_alpha() , (70, 70))
+        self.image = self.down
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
@@ -71,11 +74,13 @@ class Player(pg.sprite.Sprite):
         # ---INCOMPLETE---, shouldnt overwrite vertical direction with horizontal direction, should keep whichever
         #                   was pressed first, like SDV
         # Flips player image based on direction of movement
+        
         if (self.vel.x > 0):
-            self.image = self.og_image
+            self.image = self.right
         elif (self.vel.x < 0):
-            self.image = pg.transform.flip(self.og_image, True, False)
+            self.image = self.left
         elif (self.vel.y > 0):
-            self.image = self.og_image
+            self.image = self.down
         elif (self.vel.y < 0):
-            self.image = pg.transform.flip(self.og_image, False, True)
+            self.image = self.up
+        
