@@ -95,8 +95,8 @@ class Camera:
     def __init__(self, focus):
         #focus/lock on player
         self.focus : Player = focus
-        self.view : pg.Surface = pg.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
-        self.origin = Vector2(SCREEN_WIDTH // 2, SCREEN_HEIGHT //2)
+        self.view : pg.Surface = pg.display.set_mode((800, 600))
+        self.origin = Vector2(800 // 2, 600 //2)
         self.viewP = self.origin.copy()
 
     def viewpoint(self) -> pg.Surface:
@@ -107,7 +107,7 @@ class Camera:
         heading = self.focus.pos - self.origin
         # Move the camera gradually towards the player
         self.origin += heading * 0.05
-        return -self.origin + Vector2(SCREEN_WIDTH // 2, SCREEN_HEIGHT // 2)
+        return -self.origin + Vector2(800 // 2, 600 // 2)
 
     def update(self):
         #calculate the difference between this camera and enity

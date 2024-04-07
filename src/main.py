@@ -16,6 +16,5 @@ def main():
     # Start the game loop
     engine.run(GameState(engine))
 
-
 pygame.quit()
 main()
