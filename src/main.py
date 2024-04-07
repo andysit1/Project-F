@@ -10,8 +10,7 @@ def main():
     # Initializes all imported pygame modules
     pygame.init()
 
-    # Create a DisplayEngine object with the specified title, frame rate, and window size
-    engine = DisplayEngine('Froggooo', 144, 800, 600)
+
 
     # Start the game loop
     engine = DisplayEngine('Froggooo', 50, 1280, 720)
