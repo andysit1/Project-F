@@ -4,7 +4,7 @@ from pygame.math import Vector2
 from modules.state_machine import State
 from components.player import Player
 from components.enemy import Enemy
-
+from components.ui import Interface
 
 '''
   --- GameState class ---
@@ -28,6 +28,7 @@ class Camera:
         self.origin = Vector2(800 // 2, 600 //2)
         self.viewP = self.origin.copy()
 
+
     def viewpoint(self) -> pg.Surface:
         pass
 
@@ -50,6 +51,8 @@ class GameState(State):
     # Makes camera and player at 400, 300. Adds player to all_sprites
     self.camera = Vector2(400, 300)
     self.player = Player((400, 300), all_sprites)
+    self.ui = Interface(self.player)
+
     self.camera_view = Camera(self.player)
 
     #preset the world size to 4000, 4000 pixels
@@ -73,11 +76,12 @@ class GameState(State):
     #draws player based in world location on surface
     self.world_surface.blit(self.player.image, self.player.rect.topleft)
 
-
     #DRAWING CAMERA VIEW
     #this draw the camera surface based on the focus on the position of player
     self.camera_view.view.blit(self.world_surface, self.camera_view.viewpointPosition())
 
+    #draws the ui onto the camera surface so it doesn't get effected by the offset
+    self.ui.on_draw(self.camera_view.view)
 
     # --- Junk test code for info on screen ---
     # velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))
