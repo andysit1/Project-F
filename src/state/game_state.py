@@ -19,7 +19,7 @@ from components.ui import Interface
     on_update : Updates game state information each frame/update
 '''
 
-#this is the camera class handles the position of surface we see on the world surface
+# This is the camera class handles the position of surface we see on the world surface
 class Camera:
     def __init__(self, focus):
         #focus/lock on player
