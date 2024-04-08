@@ -28,7 +28,9 @@ class Player(pg.sprite.Sprite):
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
         self.speed = 400
-        self.dash_timer : float = 0.0
+        self.dash_timer : float = 0.0   #in seconds
+        self.dash_time_length_seconds : float = 0.3 #in seconds
+        self.dash_time_cooldown : float = 0.2
         self.dash_vel = Vector2(0, 0)
         self.player_particles = Particles(self) #init the particles system for player
         self.max_health = 10
@@ -47,9 +49,9 @@ class Player(pg.sprite.Sprite):
         #dashing
         if event.type == pg.KEYDOWN and event.key == pg.K_z:
             #only add the timer when not active or below 0
-            if self.dash_timer <= 0:
+            if self.dash_timer <= -self.dash_time_cooldown:
                 self.player_particles.generate_particles_frog_dash() #generates the particles
-                self.dash_timer = 3
+                self.dash_timer = self.dash_time_length_seconds
                 self.dash_vel = self.vel * 2   #takes the current velocity at that given moment based on key input
 
 
@@ -92,11 +94,11 @@ class Player(pg.sprite.Sprite):
             pass
 
     # Updates player positions based on velocity
-    def update(self):
-
+    def update(self, dt):
+        #you multiple dt by 1 since you want to scale 1 second of time to be consistent
+        self.dash_timer -= 1 * dt
         #if we have a dash_timer active then we need to add the dash vel instead of the normal velocity of walking
         if self.dash_timer > 0:
-            self.dash_timer -= 0.2
             self.pos += self.dash_vel
             self.rect.center = self.pos
         else:

@@ -121,7 +121,7 @@ class GameState(State):
   # Updates relevant game state information
   def on_update(self, delta):
     self.dt = delta
-    self.player.update()
+    self.player.update(delta)
     self.ui.on_update()
     # Updates all fly enemies
     for fly in self.flies:
