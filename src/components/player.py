@@ -1,5 +1,6 @@
 import pygame as pg
 from pygame.math import Vector2
+from components.particles import Particles
 
 '''
   --- Player class ---
@@ -29,20 +30,21 @@ class Player(pg.sprite.Sprite):
         self.speed = 400
         self.dash_timer : float = 0.0
         self.dash_vel = Vector2(0, 0)
+        self.player_particles = Particles(self) #init the particles system for player
 
     # Handles player actions based on key presses
     def handle_event(self, event, dt):
-        self.player_movement(event, dt) # Moves the player
 
+        self.player_movement(event, dt) # Moves the player
         #WIP -- for attack --
         if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
             print("space")
-
 
         #dashing
         if event.type == pg.KEYDOWN and event.key == pg.K_z:
             #only add the timer when not active or below 0
             if self.dash_timer <= 0:
+                self.player_particles.generate_particles_frog_dash() #generates the particles
                 self.dash_timer = 3
                 self.dash_vel = self.vel * 2   #takes the current velocity at that given moment based on key input
 

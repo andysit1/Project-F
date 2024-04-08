@@ -5,7 +5,7 @@ from modules.state_machine import State
 from components.player import Player
 from components.enemy import Enemy
 from components.ui import Interface
-
+from components.particles import Particles
 '''
   --- GameState class ---
   This class is responsible for managing the game state, which includes everything currently loaded into the game.
@@ -52,7 +52,6 @@ class GameState(State):
     self.camera = Vector2(400, 300)
     self.player = Player((400, 300), all_sprites)
     self.ui = Interface(self.player)
-
     self.camera_view = Camera(self.player)
 
     #preset the world size to 4000, 4000 pixels
@@ -73,9 +72,11 @@ class GameState(State):
     for fly in self.flies:
       self.world_surface.blit(fly.image, fly.rect.topleft)
 
+    #draws the player particle effects
+    self.player.player_particles.on_draw(self.world_surface)
+
     #draws player based in world location on surface
     self.world_surface.blit(self.player.image, self.player.rect.topleft)
-
     #DRAWING CAMERA VIEW
     #this draw the camera surface based on the focus on the position of player
     self.camera_view.view.blit(self.world_surface, self.camera_view.viewpointPosition())
