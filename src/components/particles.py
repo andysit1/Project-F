@@ -1,6 +1,18 @@
 import pygame
 import random
 
+'''
+--- Particles class ---
+This class is responsible for creating particles.
+(ie. player dashes)
+
+Functions:
+  __init__ : Initializes the particles object
+  generate_particles_frog_dash : Generates particles when the player dashes
+  on_draw : Draws the particles
+
+'''
+
 class Particles():
   def __init__(self, player):
       self.player = player
@@ -13,7 +25,7 @@ class Particles():
 
   def on_draw(self, surface):
 
-     #if particles exsit then ...
+     #if particles exist then ...
      if len(self.particles) > 0:
         for particle in self.particles:
           particle[0][0] += particle[1][0]

@@ -8,10 +8,10 @@ from components.player import Player
   (ie. enemy tracking, health, enemy attacks...)
 
   Functions:
-    __init__ : Initializes the player object
-    handle_event : Handles player events (ie. key presses)
-    player_movement : Handles player directional movement
-    update : Updates player information each frame/update
+    __init__ : Initializes the enemy object
+    update : Updates enemy information each frame, like movement
+    on_draw : Draws all of the enemies graphics
+    hurt_enemy : When the enemy is hurt, lowers health and knockback
 '''
 
 class Enemy(pg.sprite.Sprite):
