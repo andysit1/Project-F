@@ -33,10 +33,10 @@ class Player(pg.sprite.Sprite):
         self.dash_time_cooldown : float = 0.2
         self.dash_vel = Vector2(0, 0)
         self.player_particles = Particles(self) #init the particles system for player
-        self.max_health = 10
+        self.max_health = 100
 
         #this health variable changes the ui
-        self.health = 5
+        self.health = 50
 
     # Handles player actions based on key presses
     def handle_event(self, event, dt):

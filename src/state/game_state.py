@@ -69,8 +69,10 @@ class GameState(State):
 
   # What is done on each frame when drawn
   def on_draw(self):
-    #clears the screen with blue color
-    self.world_surface.fill((100, 170, 220))
+    #Fills screen with tiles (stole code from internet)
+    ts, w, h, c1, c2 = 80, *self.world_surface.get_size(), (69, 170, 69), (80, 180, 80)
+    tiles = [((x*ts, y*ts, ts, ts), c1 if (x+y) % 2 == 0 else c2) for x in range((w+ts-1)//ts) for y in range((h+ts-1)//ts)]
+    [pg.draw.rect(self.world_surface, color, rect) for rect, color in tiles]
 
     #DRAWING IN WORLD
     # Draws all fly enemies
