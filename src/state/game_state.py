@@ -78,6 +78,7 @@ class GameState(State):
       #removes dead flies
       self.wasps = [wasp for wasp in self.wasps if wasp.health > 0]
       fly.on_draw(self.world_surface)
+  
     # Draws all wasp enemies
     for wasp in self.wasps:
       #removes dead wasps
@@ -87,7 +88,8 @@ class GameState(State):
     #draws the player particle effects
     self.player.player_particles.on_draw(self.world_surface)
 
-    #draws player based in world location on surface
+    #draws player based in
+    # rld location on surface
     self.world_surface.blit(self.player.image, self.player.rect.topleft)
 
     #DRAWING CAMERA VIEW

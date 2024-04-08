@@ -21,7 +21,12 @@ class Particles():
   def generate_particles_frog_dash(self):
       #generate 50 particles
       for _ in range(7):
-        self.particles.append([[self.player.pos.x, self.player.pos.y + 30], [random.randint(0, 50) / 10 - 4, random.randint(-6, -3)], random.randint(1, 3)])
+        self.particles.append([[self.player.pos.x, self.player.pos.y + 30], [random.randint(0, 50) / 10 - 4, random.randint(-6, -3)], random.randint(1, 3), "white"])
+
+  def generate_particles_blood(self):
+      for _ in range(3):
+        self.particles.append([[self.player.pos.x, self.player.pos.y], [random.randint(0, 80) / 10 - 4, random.randint(-1, 1)], random.randint(6, 8), "red"])
+
 
   def on_draw(self, surface):
 
@@ -32,7 +37,7 @@ class Particles():
           particle[0][1] += particle[1][1]
           particle[2] -= 0.1
           particle[1][1] += 0.1
-          pygame.draw.circle(surface, (255, 255, 255), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+          pygame.draw.circle(surface, particle[3], [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
           if particle[2] <= 0:
               self.particles.remove(particle)
 
