@@ -1,5 +1,6 @@
 import pygame as pg
 from pygame.math import Vector2
+from components.player import Player
 
 '''
   --- Enemy class ---
@@ -14,20 +15,30 @@ from pygame.math import Vector2
 '''
 
 class Enemy(pg.sprite.Sprite):
-  def __init__(self, pos, img_name, *groups):
+  def __init__(self, player : Player, pos, img_name, health, *groups):
     super().__init__(*groups)
+    self.size_x = 40
+    self.size_y = 40
     #import, load, and convert image to Surface, then scale it to 40x40
-    self.image = pg.transform.scale(pg.image.load("./assets/" + img_name + ".png").convert_alpha() , (40, 40))
+    self.image = pg.transform.scale(pg.image.load("./assets/" + img_name + ".png").convert_alpha() , (self.size_x, self.size_y))
     self.rect = self.image.get_rect(center=pos)
     self.pos = Vector2(pos)
     self.vel = Vector2(0, 0)
     self.speed = 40
+    self.max_health = health
+    self.health = health
+    self.player = player
+    self.swallowable = False
 
-  def update(self, Player, dt):
+  def update(self, dt, surface : pg.Surface):
+
+    # Checks if enemy is swallowable
+    if (self.health <= self.max_health/4):
+      self.swallowable = True
 
     # If the player is within 300 pixels of the enemy, the enemy will move towards the player
-    if ((self.pos - Player.pos).magnitude() < 300):
-      self.vel = (Player.pos - self.pos).normalize() * self.speed * dt
+    if ((self.pos - self.player.pos).magnitude() < 300):
+      self.vel = (self.player.pos - self.pos).normalize() * self.speed * dt
     else:
       self.vel = Vector2(0, 0)
 
@@ -35,5 +46,19 @@ class Enemy(pg.sprite.Sprite):
     self.pos += self.vel
     self.rect.center = self.pos
 
+  def on_draw(self, surface : pg.Surface):
+    # Draws the enemy
+    surface.blit(self.image, self.rect.topleft)
 
-        
+    # Draws the health bar above the enemy
+    if ((self.pos - self.player.pos).magnitude() < 300):
+      pg.draw.rect(surface, "black", (self.pos.x - self.size_x/2 - 2, self.pos.y - self.size_y/2 - 6, self.size_x + 4, 7))
+      # Draws the health bar yellow if the enemy is swallowable
+      if(self.swallowable): 
+        pg.draw.rect(surface, "yellow", (self.pos.x - self.size_x/2, self.pos.y - self.size_y/2 - 5, (self.health / self.max_health) * self.size_x, 5))
+      else:
+        pg.draw.rect(surface, "red", (self.pos.x - self.size_x/2, self.pos.y - self.size_y/2 - 5, (self.health / self.max_health) * self.size_x, 5))
+
+  # Hurts the enemy
+  def hurt_enemy(self, damage):
+    self.health -= damage

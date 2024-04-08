@@ -121,7 +121,7 @@ class DisplayEngine:
                 else:
                     self.machine.current.on_event(event)
 
-            self.machine.current.on_draw(self.surface)
+            self.machine.current.on_draw()
             self.machine.current.on_update(dt)
 
             try:

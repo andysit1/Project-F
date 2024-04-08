@@ -35,9 +35,8 @@ class Player(pg.sprite.Sprite):
         self.player_movement(event, dt) # Moves the player
 
         #WIP -- for attack --
-        if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-            print("space")
-
+        #if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
+            # print("space")
 
         #dashing
         if event.type == pg.KEYDOWN and event.key == pg.K_z:

@@ -58,20 +58,31 @@ class GameState(State):
     #preset the world size to 4000, 4000 pixels
     self.world_surface = pg.Surface((4000, 4000))
 
-    # Spawns 250 fly enemies at random locations
+    # Spawns 200 fly enemies at random locations
     self.flies = []
     for _ in range(250):
-      self.flies.append(Enemy((randrange(-3000, 3001), randrange(-3000, 3001)),"fly", all_sprites))
+      self.flies.append(Enemy(self.player, (randrange(-3000, 3001), randrange(-3000, 3001)),"fly", 20, all_sprites))
+    # Spawns 5 wasp enemies at random locations
+    self.wasps = []
+    for _ in range(50):
+      self.wasps.append(Enemy(self.player, (randrange(-3000, 3001), randrange(-3000, 3001)),"wasp", 40, all_sprites))
 
   # What is done on each frame when drawn
-  def on_draw(self, surface):
+  def on_draw(self):
     #clears the screen with blue color
     self.world_surface.fill((100, 170, 220))
 
     #DRAWING IN WORLD
     # Draws all fly enemies
     for fly in self.flies:
-      self.world_surface.blit(fly.image, fly.rect.topleft)
+      #removes dead flies
+      self.wasps = [wasp for wasp in self.wasps if wasp.health > 0]
+      fly.on_draw(self.world_surface)
+    # Draws all wasp enemies
+    for wasp in self.wasps:
+      #removes dead wasps
+      self.flies = [fly for fly in self.flies if fly.health > 0]
+      wasp.on_draw(self.world_surface)
 
     #draws player based in world location on surface
     self.world_surface.blit(self.player.image, self.player.rect.topleft)
@@ -91,11 +102,26 @@ class GameState(State):
   def on_event(self, event):
     # Calls player's handle_event function (player's movements and attacks)
     self.player.handle_event(event=event, dt=self.dt)
-
+    
+    # If space is pressed, player attacks enemies
+    if event.type == pg.KEYDOWN:
+      if event.key == pg.K_SPACE:
+        for fly in self.flies:
+          #checks if player collides with fly, hurts it
+          if self.player.rect.colliderect(fly.rect):
+            fly.hurt_enemy(5)
+          #checks if player collides with fly, hurts it
+        for wasp in self.wasps:
+          if self.player.rect.colliderect(wasp.rect):
+              wasp.hurt_enemy(5)
+            
   # Updates relevant game state information
   def on_update(self, delta):
     self.dt = delta
     self.player.update()
     # Updates all fly enemies
     for fly in self.flies:
-      fly.update(self.player, delta)
+      fly.update(delta, self.world_surface)
+    # Updates all wasp enemies
+    for wasp in self.wasps:
+      wasp.update(delta, self.world_surface)
