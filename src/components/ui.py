@@ -3,9 +3,18 @@ import os
 import sys
 current_dir = os.path.dirname(__file__)
 sys.path.append(current_dir)
-
 from components.player import Player
 
+'''
+  --- UI class ---
+  This class is responsible for drawing the player's information on screen.
+  (ie. health bar, mana bar...)
+
+  Functions:
+    __init__ : Initializes the UI object
+    on_draw : Draws the player's information
+    on_event : Handles UI events
+'''
 
 #Interface class to draw the player's information!
 class Interface():
