@@ -105,7 +105,7 @@ class GameState(State):
   def on_event(self, event):
     # Calls player's handle_event function (player's movements and attacks)
     self.player.handle_event(event=event, dt=self.dt)
-    
+
     # If space is pressed, player attacks enemies
     if event.type == pg.KEYDOWN:
       if event.key == pg.K_SPACE:
@@ -117,11 +117,12 @@ class GameState(State):
         for wasp in self.wasps:
           if self.player.rect.colliderect(wasp.rect):
               wasp.hurt_enemy(5)
-            
+
   # Updates relevant game state information
   def on_update(self, delta):
     self.dt = delta
     self.player.update()
+    self.ui.on_update()
     # Updates all fly enemies
     for fly in self.flies:
       fly.update(delta, self.world_surface)

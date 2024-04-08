@@ -31,6 +31,10 @@ class Player(pg.sprite.Sprite):
         self.dash_timer : float = 0.0
         self.dash_vel = Vector2(0, 0)
         self.player_particles = Particles(self) #init the particles system for player
+        self.max_health = 10
+
+        #this health variable changes the ui
+        self.health = 5
 
     # Handles player actions based on key presses
     def handle_event(self, event, dt):
@@ -89,6 +93,7 @@ class Player(pg.sprite.Sprite):
 
     # Updates player positions based on velocity
     def update(self):
+
         #if we have a dash_timer active then we need to add the dash vel instead of the normal velocity of walking
         if self.dash_timer > 0:
             self.dash_timer -= 0.2
