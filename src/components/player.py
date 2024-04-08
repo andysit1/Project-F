@@ -27,14 +27,24 @@ class Player(pg.sprite.Sprite):
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
         self.speed = 400
+        self.dash_timer : float = 0.0
+        self.dash_vel = Vector2(0, 0)
 
     # Handles player actions based on key presses
     def handle_event(self, event, dt):
         self.player_movement(event, dt) # Moves the player
-        
-        # Will be for attacking --WIP--
+
+        #WIP -- for attack --
         if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-            print('space')
+            print("space")
+
+
+        #dashing
+        if event.type == pg.KEYDOWN and event.key == pg.K_z:
+            #only add the timer when not active or below 0
+            if self.dash_timer <= 0:
+                self.dash_timer = 3
+                self.dash_vel = self.vel * 2   #takes the current velocity at that given moment based on key input
 
 
     # Gets player movement vector based on key presses
@@ -74,11 +84,17 @@ class Player(pg.sprite.Sprite):
             self.vel = round(self.vel.normalize() * self.speed * dt, 3)
         except:
             pass
-      
+
     # Updates player positions based on velocity
     def update(self):
-        self.pos += self.vel
-        self.rect.center = self.pos
+        #if we have a dash_timer active then we need to add the dash vel instead of the normal velocity of walking
+        if self.dash_timer > 0:
+            self.dash_timer -= 0.2
+            self.pos += self.dash_vel
+            self.rect.center = self.pos
+        else:
+            self.pos += self.vel
+            self.rect.center = self.pos
 
         # Changes player image based on direction
         if (self.vel.length() > 0):
