@@ -17,10 +17,9 @@ from components.player import Player
 class Enemy(pg.sprite.Sprite):
   def __init__(self, player : Player, pos, img_name, health, *groups):
     super().__init__(*groups)
-    self.size_x = 40
-    self.size_y = 40
+    self.size = Vector2(40, 40)
     #import, load, and convert image to Surface, then scale it to 40x40
-    self.image = pg.transform.scale(pg.image.load("./assets/" + img_name + ".png").convert_alpha() , (self.size_x, self.size_y))
+    self.image = pg.transform.scale(pg.image.load("./assets/" + img_name + ".png").convert_alpha() , (self.size.x, self.size.y))
     self.rect = self.image.get_rect(center=pos)
     self.pos = Vector2(pos)
     self.vel = Vector2(0, 0)
@@ -52,13 +51,21 @@ class Enemy(pg.sprite.Sprite):
 
     # Draws the health bar above the enemy
     if ((self.pos - self.player.pos).magnitude() < 300):
-      pg.draw.rect(surface, "black", (self.pos.x - self.size_x/2 - 2, self.pos.y - self.size_y/2 - 6, self.size_x + 4, 7))
+      pg.draw.rect(surface, "black", (self.pos.x - self.size.x/2 - 2, self.pos.y - self.size.y/2 - 6, self.size.x + 4, 7))
       # Draws the health bar yellow if the enemy is swallowable
       if(self.swallowable): 
-        pg.draw.rect(surface, "yellow", (self.pos.x - self.size_x/2, self.pos.y - self.size_y/2 - 5, (self.health / self.max_health) * self.size_x, 5))
+        pg.draw.rect(surface, "yellow", (self.pos.x - self.size.x/2, self.pos.y - self.size.y/2 - 5, (self.health / self.max_health) * self.size.x, 5))
       else:
-        pg.draw.rect(surface, "red", (self.pos.x - self.size_x/2, self.pos.y - self.size_y/2 - 5, (self.health / self.max_health) * self.size_x, 5))
+        pg.draw.rect(surface, "red", (self.pos.x - self.size.x/2, self.pos.y - self.size.y/2 - 5, (self.health / self.max_health) * self.size.x, 5))
 
   # Hurts the enemy
   def hurt_enemy(self, damage):
     self.health -= damage
+
+    # Knockback effect
+    if (self.pos - self.player.pos).magnitude() != 0:
+      self.vel = (self.pos - self.player.pos).normalize() * 10 # <- Knockback amount
+
+      # Updates position of enemy
+      self.pos += self.vel
+      self.rect.center = self.pos
