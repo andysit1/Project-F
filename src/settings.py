@@ -1,11 +1,21 @@
 import pygame
-import random
 import sys
 import os
+import json
+from pydantic import BaseModel
+from modules.utils import load_settings, save_settings
+
 
 # Setup the environment by appending the current directory to the system path for asset access.
 current_dir = os.path.dirname(os.path.dirname(__file__))
 sys.path.append(current_dir)
+
+
+#Needs discussion about which settings we want to track...
+class SettingsModel(BaseModel):
+  def __init__(self):
+     pass
+
 
 class Settings():
   """
