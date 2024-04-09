@@ -4,6 +4,7 @@ from state.game_state import GameState
 
 """
     Starts up pygame lmao
+    #hi hi hi
 """
 
 def main():
