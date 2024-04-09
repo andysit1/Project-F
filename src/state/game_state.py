@@ -5,7 +5,7 @@ from modules.state_machine import State
 from components.player import Player
 from components.enemy import Enemy
 from components.ui import Interface
-
+from components.camera import Camera
 '''
   --- GameState class ---
   This class is responsible for managing the game state, which includes everything currently loaded into the game.
@@ -19,25 +19,6 @@ from components.ui import Interface
     on_update : Updates game state information each frame/update
 '''
 
-# This is the camera class handles the position of surface we see on the world surface
-class Camera:
-    def __init__(self, focus):
-        #focus/lock on player
-        self.focus : Player = focus
-        self.view : pg.Surface = pg.display.set_mode((800, 600))
-        self.origin = Vector2(800 // 2, 600 //2)
-        self.viewP = self.origin.copy()
-
-
-    def viewpoint(self) -> pg.Surface:
-        pass
-
-    def viewpointPosition(self):
-        # Calculate the difference between the player and the center of the screen
-        heading = self.focus.pos - self.origin
-        # Move the camera gradually towards the player
-        self.origin += heading * 0.05
-        return -self.origin + Vector2(800 // 2, 600 // 2)
 
 
 class GameState(State):
@@ -80,7 +61,7 @@ class GameState(State):
       #removes dead flies
       self.wasps = [wasp for wasp in self.wasps if wasp.health > 0]
       fly.on_draw(self.world_surface)
-  
+
     # Draws all wasp enemies
     for wasp in self.wasps:
       #removes dead wasps
