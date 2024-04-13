@@ -51,4 +51,4 @@ while True:
 
     # Update ------------------------------------------------- #
     pygame.display.update()
-    mainClock.tick(140)
+    mainClock.tick(60)

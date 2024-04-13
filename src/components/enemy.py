@@ -2,6 +2,7 @@ import pygame as pg
 from pygame.math import Vector2
 from components.player import Player
 from components.particles import Particles
+from settings import Settings
 '''
   --- Enemy class ---
   This class is responsible for controlling everything about the enemies.
@@ -17,9 +18,10 @@ from components.particles import Particles
 class Enemy(pg.sprite.Sprite):
   def __init__(self, player : Player, pos, img_name, health, *groups):
     super().__init__(*groups)
+    settings = Settings()
     self.size = Vector2(40, 40)
     #import, load, and convert image to Surface, then scale it to 40x40
-    self.image = pg.transform.scale(pg.image.load("./assets/" + img_name + ".png").convert_alpha() , (self.size.x, self.size.y))
+    self.image = pg.transform.scale(pg.image.load("{}/assets/".format(settings.src) + img_name + ".png").convert_alpha() , (self.size.x, self.size.y))
     self.rect = self.image.get_rect(center=pos)
     self.pos = Vector2(pos)
     self.vel = Vector2(0, 0)

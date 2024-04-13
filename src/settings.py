@@ -1,14 +1,11 @@
 import pygame
 import sys
 import os
-import json
 from pydantic import BaseModel
 from modules.utils import load_settings, save_settings
 
 
 # Setup the environment by appending the current directory to the system path for asset access.
-current_dir = os.path.dirname(os.path.dirname(__file__))
-sys.path.append(current_dir)
 
 
 #Needs discussion about which settings we want to track...
@@ -23,6 +20,9 @@ class Settings():
 
   """
   def __init__(self):
+    current_dir = os.path.dirname(os.path.dirname(__file__))
+    sys.path.append(current_dir)
+
     """
     Initializes the Settings class by loading all necessary game assets from the assets directory and creating theme sets.
     """
@@ -32,18 +32,20 @@ class Settings():
     self.frog_up  = os.path.join(current_dir, "assets", "player_assets", "up.png")
     self.frog_down  = os.path.join(current_dir, "assets", "player_assets", "down.png")
 
+    self.src = current_dir
+
+    self.player_size = (70, 70)
 
     #dict representing frog sprites
     self.character_sprite = {
-      'right' : pygame.image.load(self.frog_right),
-      'left' : pygame.image.load(self.frog_left),
-      'up' : pygame.image.load(self.frog_up),
-      'down' : pygame.image.load(self.frog_down)
+      'right' :  pygame.transform.scale(pygame.image.load(self.frog_right), self.player_size),
+      'left' :  pygame.transform.scale(pygame.image.load(self.frog_left), self.player_size),
+      'up' :  pygame.transform.scale(pygame.image.load(self.frog_up), self.player_size),
+      'down' :  pygame.transform.scale(pygame.image.load(self.frog_down), self.player_size)
     }
 
 if __name__ == "__main__":
   #example of how it works
   settings = Settings()
-  print("Parent directory...", current_dir)
-  print("frog right path", settings.frog_right)
-  print("RIGHT SURF", settings.character_sprite['right'])
+  print(settings.character_sprite)
+  print(settings.src)

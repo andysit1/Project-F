@@ -1,6 +1,7 @@
 import pygame as pg
 from pygame.math import Vector2
 from components.particles import Particles
+from settings import Settings
 
 '''
   --- Player class ---
@@ -17,11 +18,12 @@ from components.particles import Particles
 class Player(pg.sprite.Sprite):
     def __init__(self, pos, *groups):
         super().__init__(*groups)
+        settings = Settings()
         #import, load, and convert image to Surface, then scale it to 70x70
-        self.up = pg.transform.scale(pg.image.load("./assets/player_assets/up.png").convert_alpha() , (70, 70))
-        self.down = pg.transform.scale(pg.image.load("./assets/player_assets/down.png").convert_alpha() , (70, 70))
-        self.right = pg.transform.scale(pg.image.load("./assets/player_assets/right.png").convert_alpha() , (70, 70))
-        self.left = pg.transform.scale(pg.image.load("./assets/player_assets/left.png").convert_alpha() , (70, 70))
+        self.up = settings.character_sprite['up'].convert_alpha()
+        self.down = settings.character_sprite['down'].convert_alpha()
+        self.right = settings.character_sprite['right'].convert_alpha()
+        self.left = settings.character_sprite['left'].convert_alpha()
         self.image = self.down
         self.keypressed = []
         self.rect = self.image.get_rect(center=pos)
