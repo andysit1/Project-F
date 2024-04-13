@@ -15,5 +15,7 @@ def main():
     # Start the game loop with the initial state set to LoginState
     engine.run(GameState(engine))
 
-pygame.quit()
-main()
+
+if __name__ == "__main__":
+    pygame.quit()
+    main()
