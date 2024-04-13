@@ -16,12 +16,12 @@ from settings import Settings
 '''
 
 class Enemy(pg.sprite.Sprite):
-  def __init__(self, player : Player, pos, img_name, health, *groups):
+  def __init__(self, player : Player, pos, surf : pg.Surface, health, *groups):
     super().__init__(*groups)
     settings = Settings()
     self.size = Vector2(40, 40)
     #import, load, and convert image to Surface, then scale it to 40x40
-    self.image = pg.transform.scale(pg.image.load("{}/assets/".format(settings.src) + img_name + ".png").convert_alpha() , (self.size.x, self.size.y))
+    self.image = surf
     self.rect = self.image.get_rect(center=pos)
     self.pos = Vector2(pos)
     self.vel = Vector2(0, 0)
@@ -34,7 +34,7 @@ class Enemy(pg.sprite.Sprite):
     #particles
     self.enemy_particles = Particles(self)
 
-  def update(self, dt, surface : pg.Surface):
+  def update(self, dt):
 
     # Checks if enemy is swallowable
     if (self.health <= self.max_health/4):

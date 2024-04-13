@@ -6,6 +6,8 @@ from components.player import Player
 from components.enemy import Enemy
 from components.ui import Interface
 from components.camera import Camera
+from settings import Settings
+
 '''
   --- GameState class ---
   This class is responsible for managing the game state, which includes everything currently loaded into the game.
@@ -24,6 +26,8 @@ from components.camera import Camera
 class GameState(State):
   def __init__(self, engine):
     super().__init__(engine)
+    self.settings = Settings()               #init pygame surfaces
+
     self.dt = 0                              # Initializes delta time
     self.clock = pg.time.Clock()             # Needed clock thing?
     font = pg.font.SysFont('comicsans', 15)  # Initializes font
@@ -37,16 +41,17 @@ class GameState(State):
     self.camera_view = Camera(self.player)
 
     #preset the world size to 4000, 4000 pixels
-    self.world_surface = pg.Surface((4000, 4000))
+    self.world_surface = pg.Surface((2000, 2000))
 
     # Spawns 200 fly enemies at random locations
+    #MOST TIME CONSUMING...
     self.flies = []
-    for _ in range(250):
-      self.flies.append(Enemy(self.player, (randrange(-3000, 3001), randrange(-3000, 3001)),"fly", 20, all_sprites))
+    for _ in range(30):
+      self.flies.append(Enemy(self.player, (randrange(0, 2000), randrange(0, 2000)), self.settings.enemy_sprite['fly'], 20, all_sprites))
     # Spawns 5 wasp enemies at random locations
     self.wasps = []
-    for _ in range(50):
-      self.wasps.append(Enemy(self.player, (randrange(-3000, 3001), randrange(-3000, 3001)),"wasp", 40, all_sprites))
+    for _ in range(30):
+      self.wasps.append(Enemy(self.player, (randrange(0, 2000), randrange(0, 2000)), self.settings.enemy_sprite['wasp'], 40, all_sprites))
 
   # What is done on each frame when drawn
   def on_draw(self):
@@ -110,7 +115,7 @@ class GameState(State):
     self.ui.on_update()
     # Updates all fly enemies
     for fly in self.flies:
-      fly.update(delta, self.world_surface)
+      fly.update(delta)
     # Updates all wasp enemies
     for wasp in self.wasps:
-      wasp.update(delta, self.world_surface)
+      wasp.update(delta)
