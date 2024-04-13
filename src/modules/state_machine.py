@@ -104,6 +104,8 @@ class DisplayEngine:
         self.delta = 0
         self.fps = fps
 
+
+        self.debug = False
         self.machine = Machine()
 
     def loop(self):
@@ -130,6 +132,11 @@ class DisplayEngine:
                 pass
 
             pygame.display.flip()
+
+            if self.debug:
+                print("Loaded Ended")
+                break
+
             self.delta = self.clock.tick(self.fps)
 
 
