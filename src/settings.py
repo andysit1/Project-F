@@ -34,9 +34,9 @@ class Settings():
 
     self.src = current_dir
 
-    self.player_size = (70, 70)
 
     #dict representing frog sprites
+    self.player_size = (70, 70)
     self.character_sprite = {
       'right' :  pygame.transform.scale(pygame.image.load(self.frog_right), self.player_size),
       'left' :  pygame.transform.scale(pygame.image.load(self.frog_left), self.player_size),
@@ -44,8 +44,16 @@ class Settings():
       'down' :  pygame.transform.scale(pygame.image.load(self.frog_down), self.player_size)
     }
 
+    #dict representing enemy sprites
+    self.enemy_size = (40, 40)
+    self.enemy_sprite = {
+      'fly' : pygame.transform.scale(pygame.image.load("{}/assets/".format(self.src) + 'fly' + ".png"), self.enemy_size),
+      'wasp' : pygame.transform.scale(pygame.image.load("{}/assets/".format(self.src) + 'wasp' + ".png"), self.enemy_size),
+    }
+
 if __name__ == "__main__":
   #example of how it works
   settings = Settings()
   print(settings.character_sprite)
   print(settings.src)
+  print(settings.enemy_sprite)
