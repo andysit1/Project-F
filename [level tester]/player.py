@@ -14,6 +14,8 @@ class Player(pg.sprite.Sprite):
         self.vel = Vector2(0, 0)
         self.speed = 4
 
+        self.dashing_timer = 2
+
     def input(self, event):
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_d:
