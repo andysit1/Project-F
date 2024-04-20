@@ -31,7 +31,7 @@ from pygame.locals import (
     K_r,
 )
 from pytmx.util_pygame import load_pygame
-
+import pytmx
 import pyscroll
 import pyscroll.data
 from pyscroll.group import PyscrollGroup
@@ -54,6 +54,21 @@ def load_image(filename: str) -> pygame.Surface:
 
 
 #I took this from there demo file and switched with out filing
+class Camera:
+    def __init__(self, focus):
+        #focus/lock on player
+        self.focus = focus
+        self.view : pygame.Surface = pygame.display.set_mode((800, 600))
+        self.origin = pygame.Vector2(800 // 2, 600 //2)
+        self.viewP = self.origin.copy()
+
+    def viewpointPosition(self):
+        # Calculate the difference between the player and the center of the screen
+        heading = self.focus.pos - self.origin
+        # Move the camera gradually towards the player
+        self.origin += heading * 0.05
+        return -self.origin + pygame.Vector2(800 // 2, 600 // 2)
+
 
 class Hero(pygame.sprite.Sprite):
     """
@@ -83,6 +98,7 @@ class Hero(pygame.sprite.Sprite):
         self.image = self.settings.character_sprite['right'].convert_alpha()
         self.velocity = [0, 0]
         self._position = [0.0, 0.0]
+        self.pos = self.position
         self._old_position = self.position
         self.rect = self.image.get_rect()
         self.feet = pygame.Rect(0, 0, self.rect.width * 0.5, 8)
@@ -127,7 +143,6 @@ class QuestGame:
 
     def __init__(self, screen: pygame.Surface) -> None:
         self.screen = screen
-
         # true while running
         self.running = False
 
@@ -136,8 +151,11 @@ class QuestGame:
 
         # setup level geometry with simple pygame rects, loaded from pytmx
         self.walls = []
-        for obj in tmx_data.objects:
-            self.walls.append(pygame.Rect(obj.x, obj.y, obj.width, obj.height))
+        for layer in tmx_data:
+            if layer.name == "wall_collision":
+                for obj in layer:
+                    if obj[2] != 0:
+                        self.walls.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
 
         # create new renderer (camera)
         self.map_layer = pyscroll.BufferedRenderer(
@@ -146,6 +164,7 @@ class QuestGame:
             clamp_camera=True,
         )
         self.map_layer.zoom = 2
+        self.origin = pygame.Vector2(800 // 2, 600 //2)
 
         # pyscroll supports layered rendering.  our map has 3 'under'
         # layers.  layers begin with 0.  the layers are 0, 1, and 2.
@@ -156,18 +175,18 @@ class QuestGame:
 
         # put the hero in the center of the map
         self.hero = Hero()
-        self.hero.position = self.map_layer.map_rect.center
+        self.camera = Camera(self.hero)
 
+        self.hero.position = self.map_layer.map_rect.center
         # add our hero to the group
         self.group.add(self.hero)
 
     def draw(self) -> None:
-
-        # center the map/screen on our Hero
         self.group.center(self.hero.rect.center)
 
-        # draw the map and all sprites
+        # Draw the map and all sprites
         self.group.draw(self.screen)
+        # self.camera.view.blit(self.screen, self.camera.viewpointPosition())
 
     def handle_input(self) -> None:
         """
