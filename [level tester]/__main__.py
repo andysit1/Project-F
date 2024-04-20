@@ -1,5 +1,6 @@
 import pygame
 import pytmx
+import os
 
 # Function to load Tiled map
 def load_map(map_file):
@@ -24,14 +25,14 @@ def main():
     screen_width = 800
     screen_height = 600
 
+    parent_dir = os.path.dirname(os.path.dirname(__file__))
+    uitImagePath = os.path.join(parent_dir, "[level tester]", "trial_blue", "blue_trial.tmx")
 
 
     screen = pygame.display.set_mode((screen_width, screen_height))
     pygame.display.set_caption("Tiled Map Test")
 
-    # Load Tiled map
-    map_file = "/Users/andy/Desktop/Projects/2024/Project-F/[level tester]/trial_blue/blue_trial.tmx"  # Replace "your_map.tmx" with your map file path
-    tm = load_map(map_file)
+    tm = load_map(uitImagePath)
 
     # Main loop
     running = True

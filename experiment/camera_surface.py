@@ -48,6 +48,8 @@ class Player(pg.sprite.Sprite):
         self.vel = Vector2(0, 0)
         self.speed = 4
         self.attack : bool = False
+        self.origin = Vector2(800 // 2, 600 //2)
+        self.MAX_DISTANCE = 5
 
     def handle_event(self, event):
         #Handles player movement
@@ -87,9 +89,20 @@ class Player(pg.sprite.Sprite):
 
 
     def update(self):
-        # Move the player.
+    # Move the player.
       self.pos += self.vel
-      self.rect.center = self.pos
+      distance_from_center = self.pos.distance_to(self.origin)
+
+    # Clamp the player within 5 meters radius of the center
+      if distance_from_center <= self.MAX_DISTANCE * 10:  # Convert meters to pixels (1 meter = 100 pixels)
+        self.rect.center = self.pos
+      else:
+        self.pos -= self.vel
+
+
+    # Update player's rectangle position
+
+
 
 class Camera:
     def __init__(self, focus):
@@ -154,6 +167,7 @@ while running:
       if int(timer) == 2:
           player.attack = False
           timer = 0
+    print(camera.viewpointPosition())
     camera.view.blit(world_surface, camera.viewpointPosition())
     # print(camera.origin)
     #draw the camera surface... here...

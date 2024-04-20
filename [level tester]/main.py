@@ -28,7 +28,7 @@ class Game:
 
     def run(self):
         parent_dir = os.path.dirname(os.path.dirname(__file__))
-        uitImagePath = os.path.join(parent_dir, "[level tester]", "tiled info", "trial level.tmx")
+        uitImagePath = os.path.join(parent_dir, "[level tester]", "trial_blue", "blue_trial.tmx")
 
         # Load TMX data
         tmx_data = pytmx.load_pygame(uitImagePath)
