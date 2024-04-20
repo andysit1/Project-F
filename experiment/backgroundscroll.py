@@ -53,6 +53,8 @@ def load_image(filename: str) -> pygame.Surface:
     return pygame.image.load(str(RESOURCES_DIR / filename))
 
 
+#I took this from there demo file and switched with out filing
+
 class Hero(pygame.sprite.Sprite):
     """
     Our Hero
