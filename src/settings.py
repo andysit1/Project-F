@@ -2,18 +2,10 @@ import pygame
 from pygame import Vector2
 import sys
 import os
-from pydantic import BaseModel
-from modules.utils import load_settings, save_settings
 from pyscroll.orthographic import BufferedRenderer
 from pyscroll.data import PyscrollDataAdapter, TiledMapData
 from pyscroll.group import PyscrollGroup
 # Setup the environment by appending the current directory to the system path for asset access.
-
-
-#Needs discussion about which settings we want to track...
-class SettingsModel(BaseModel):
-  def __init__(self):
-     pass
 
 
 class Settings():
@@ -194,7 +186,6 @@ if __name__ == "__main__":
     map_settings = MapSettings()
     all_sprites = pygame.sprite.Group()
     player = Player((400, 300), all_sprites)
-    camera_player = Player((400, 300), all_sprites)
 
     camera = Camera(
        focus=player,
@@ -212,14 +203,11 @@ if __name__ == "__main__":
     screen_offset = Vector2(0,0)
     group = PyscrollGroup(map_layer=camera, default_layer=2)
     player.pos = camera.map_rect.center
-    camera_player.pos = camera.map_rect.center
     group.add(player)
-    group.add(camera_player)
 
 
     while running:
         player.update()
-        camera_player.update()
         for event in pygame.event.get():
             player.handle_event(event=event)
             if event.type == pygame.QUIT:
