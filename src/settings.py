@@ -4,8 +4,9 @@ import sys
 import os
 from pydantic import BaseModel
 from modules.utils import load_settings, save_settings
-
-
+from pyscroll.orthographic import BufferedRenderer
+from pyscroll.data import PyscrollDataAdapter, TiledMapData
+from pyscroll.group import PyscrollGroup
 # Setup the environment by appending the current directory to the system path for asset access.
 
 
@@ -63,6 +64,7 @@ class MapSettings():
   def __init__(self):
     self.layout = [1, 1, 1]
     self.surf = self.load_map(map_path)
+    self.py_surf = pytmx.load_pygame(map_path)
     #represent where the player is in the self.layout
     self.pos : int = 0
 
@@ -113,7 +115,7 @@ class Player(pygame.sprite.Sprite):
         self.vel = Vector2(0, 0)
         self.speed = 4
         self.attack : bool = False
-        self.origin = Vector2(800 // 2, 600 //2)
+        self.origin = Vector2(1680 // 2, 1080 //2)
 
     def handle_event(self, event):
         #Handles player movement
@@ -161,37 +163,26 @@ class Player(pygame.sprite.Sprite):
 
 
 
-class Camera:
-    def __init__(self, focus):
-        #focus/lock on player
+class Camera(BufferedRenderer):
+    def __init__(self, focus, data, size):
+        super().__init__(data=data, size=size, clamp_camera=False, zoom=2)
+                    #focus/lock on player
         self.focus : Player = focus
-        self.view : pygame.Surface = pygame.display.set_mode((800, 600))
-        self.origin = Vector2(800 // 2 , 600 //2)
+        self.view : pygame.Surface = pygame.display.set_mode((1680, 1080))
+        self.origin = Vector2(1680 // 2 , 1080 //2)
         self.viewP = self.origin.copy()
-        self.zoom_factor = 2
 
     def viewpoint(self) -> pygame.Surface:
         pass
 
     def viewpointPosition(self):
-        print(self.focus.pos)
         # Calculate the difference between the player and the center of the screen
         heading = self.focus.pos - self.origin
         # Move the camera gradually towards the player
         self.origin += heading * 0.05
-        return -self.origin + Vector2(800 // 2 , 600 //2)
+        return -self.origin + self.focus.pos
 
-    def zoom_in(self):
-        self.zoom_factor += 0.1
 
-    def zoom_out(self):
-        if self.zoom_factor > 0.1:
-            self.zoom_factor -= 0.1
-
-    def apply_zoom(self, surface):
-        # Scale the surface based on the zoom factor
-        scaled_size = (int(surface.get_width() * self.zoom_factor), int(surface.get_height() * self.zoom_factor))
-        return pygame.transform.scale(surface, scaled_size)
 
 
 if __name__ == "__main__":
@@ -199,35 +190,59 @@ if __name__ == "__main__":
 
     pygame.init()
     pygame.font.init()
-    screen = init_screen(800, 600)
+    screen = init_screen(1680, 1080)
     map_settings = MapSettings()
     all_sprites = pygame.sprite.Group()
     player = Player((400, 300), all_sprites)
-    camera = Camera(player)
-    layout = [1, 1, 1]
+    camera_player = Player((400, 300), all_sprites)
 
+    camera = Camera(
+       focus=player,
+       data=TiledMapData(map_settings.py_surf),
+       size=(1680, 1080)
+    )
+
+    camera.zoom = 2
+
+    layout = [1, 1, 1]
     for position in layout:
        print(position)
     running = True
 
     screen_offset = Vector2(0,0)
+    group = PyscrollGroup(map_layer=camera, default_layer=2)
+    player.pos = camera.map_rect.center
+    camera_player.pos = camera.map_rect.center
+    group.add(player)
+    group.add(camera_player)
+
 
     while running:
         player.update()
+        camera_player.update()
         for event in pygame.event.get():
             player.handle_event(event=event)
             if event.type == pygame.QUIT:
                 running = False
 
-        screen.blit(map_settings.surf, (0,0))
-        screen.blit(player.image, player.rect.topleft)
+        view = camera.viewpointPosition() + player.pos
+        #camera viewpoint doesnt align with the player position
 
-        scaled_map_surface = camera.apply_zoom(screen)
+        group.center(view)
+        # camera._x_offset +=
+        group.draw(screen)
+        pygame.draw.circle(screen, (255, 255, 255), view, 10)
+
+
+
+        # screen.fill("white")
+        # camera_viewpoint = camera.viewpointPosition()
+        # screen.blit(map_settings.surf, camera_viewpoint)
+        # screen.blit(player.image, player.rect.topleft + camera_viewpoint)
+
+
 
         #creates an offset in the world to create damping effect
-        camera.view.blit(scaled_map_surface, camera.viewpointPosition())
-
-
 
         pygame.display.flip()
         clock.tick(60)
