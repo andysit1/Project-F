@@ -225,13 +225,13 @@ if __name__ == "__main__":
             if event.type == pygame.QUIT:
                 running = False
 
-        view = camera.viewpointPosition() + player.pos
+        view = -camera.viewpointPosition() + player.pos
         #camera viewpoint doesnt align with the player position
 
         group.center(view)
         # camera._x_offset +=
         group.draw(screen)
-        pygame.draw.circle(screen, (255, 255, 255), view, 10)
+        # pygame.draw.circle(screen, (255, 255, 255), view + player.pos, 10)
 
 
 
