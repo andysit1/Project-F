@@ -243,7 +243,7 @@ if __name__ == "__main__":
                 sprite.move_back(dt)
 
 
-        view = camera.viewpointPosition() + player.pos
+        view = -camera.viewpointPosition() + player.pos
         #camera viewpoint doesnt align with the player position
 
         group.center(view)
