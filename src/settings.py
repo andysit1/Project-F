@@ -47,7 +47,7 @@ class Settings():
 
 import pytmx
 current_dir = os.path.dirname(os.path.dirname(__file__))
-uitImagePath = os.path.join(current_dir,"[level tester]", "trial_blue", "blue_trial.tmx")
+uitImagePath = os.path.join(current_dir,"[level tester]", "trial_blue", "unbound_blue.tmx")
 map_path = uitImagePath
 #Caches the map into pygame surfaces...
 
@@ -60,6 +60,14 @@ class MapSettings():
     #represent where the player is in the self.layout
     self.pos : int = 0
 
+    self.walls = []
+    for layer in self.py_surf:
+        if layer.name == "wall_collision":
+            for obj in layer:
+                print(obj)
+                if obj[2] != 0:
+                    self.walls.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
+
   def update_visiblity(self):
     adj = [self.pos - 1, self.pos + 1]
     for pos in adj:
@@ -67,6 +75,7 @@ class MapSettings():
           print(pos)
 
   def load_map(self, filename) -> pygame.Surface:
+      print(filename)
       tm = pytmx.load_pygame(filename)
 
       map_width = tm.width * tm.tilewidth
@@ -89,7 +98,6 @@ class MapSettings():
       return world_surface
 
 
-
 def init_screen(width: int, height: int) -> pygame.Surface:
     screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
     return screen
@@ -100,14 +108,17 @@ class Player(pygame.sprite.Sprite):
 
     def __init__(self, pos, *groups):
         super().__init__(*groups)
-        self.image = pygame.Surface((20, 20))
+        self.image = pygame.Surface((10, 10))
         self.image.fill(pygame.Color('dodgerblue1'))
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 4
+        self.speed = 5
         self.attack : bool = False
         self.origin = Vector2(1680 // 2, 1080 //2)
+
+        self._old_position = None
+        self.feet = pygame.Rect(self.pos.x, self.pos.y, self.rect.width * 0.5, 8)
 
     def handle_event(self, event):
         #Handles player movement
@@ -144,20 +155,28 @@ class Player(pygame.sprite.Sprite):
                 self.image.get_width(),
                 self.image.get_height()
               )
-
-
-    def update(self):
-    # Move the player.
-      self.pos += self.vel
-      self.rect.center = self.pos
-
     # Update player's rectangle position
+    def move_back(self, dt: float) -> None:
+        """
+        If called after an update, the sprite can move back
+
+        """
+        self.pos = self._old_position
+        self.rect.center = self.pos
+        self.feet.midbottom = self.rect.midbottom
+
+    def update(self, dt):
+    # Move the player.
+        self._old_position = self.pos[:]
+        self.pos += self.vel
+        self.rect.center = self.pos
+        self.feet.midbottom = self.rect.midbottom
 
 
 
 class Camera(BufferedRenderer):
     def __init__(self, focus, data, size):
-        super().__init__(data=data, size=size, clamp_camera=False, zoom=2)
+        super().__init__(data=data, size=size, clamp_camera=True, zoom=2.5)
                     #focus/lock on player
         self.focus : Player = focus
         self.view : pygame.Surface = pygame.display.set_mode((1680, 1080))
@@ -173,6 +192,7 @@ class Camera(BufferedRenderer):
         # Move the camera gradually towards the player
         self.origin += heading * 0.05
         return -self.origin + self.focus.pos
+
 
 
 
@@ -193,8 +213,6 @@ if __name__ == "__main__":
        size=(1680, 1080)
     )
 
-    camera.zoom = 2
-
     layout = [1, 1, 1]
     for position in layout:
        print(position)
@@ -202,24 +220,36 @@ if __name__ == "__main__":
 
     screen_offset = Vector2(0,0)
     group = PyscrollGroup(map_layer=camera, default_layer=2)
-    player.pos = camera.map_rect.center
+    player.pos = (176, 319.5)
     group.add(player)
 
+    import time
+    previous_time = time.time()
 
     while running:
-        player.update()
+        print("FPS:", int(clock.get_fps()))
+        dt = time.time() - previous_time
+        previous_time = time.time()
+
+
         for event in pygame.event.get():
             player.handle_event(event=event)
             if event.type == pygame.QUIT:
                 running = False
 
-        view = -camera.viewpointPosition() + player.pos
+        group.update(dt)
+        for sprite in group.sprites():
+            if sprite.feet.collidelist(map_settings.walls) > -1:
+                sprite.move_back(dt)
+
+
+        view = camera.viewpointPosition() + player.pos
         #camera viewpoint doesnt align with the player position
 
         group.center(view)
         # camera._x_offset +=
         group.draw(screen)
-        # pygame.draw.circle(screen, (255, 255, 255), view + player.pos, 10)
+        pygame.draw.circle(screen, (255, 255, 255), (player.feet.x, player.feet.y), 10)
 
 
 

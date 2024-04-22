@@ -186,6 +186,8 @@ class QuestGame:
 
         # Draw the map and all sprites
         self.group.draw(self.screen)
+        pygame.draw.circle(self.screen, (255, 255, 255), (self.hero.feet.x, self.hero.feet.y), 10)
+
         # self.camera.view.blit(self.screen, self.camera.viewpointPosition())
 
     def handle_input(self) -> None:
@@ -263,6 +265,7 @@ class QuestGame:
                 self.handle_input()
                 self.update(dt)
                 self.draw()
+
                 pygame.display.flip()
 
         except KeyboardInterrupt:
