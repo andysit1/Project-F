@@ -1,7 +1,13 @@
 <?xml version="1.0" encoding="UTF-8"?>
+<<<<<<< HEAD
 <map version="1.10" tiledversion="1.10.2" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="2">
  <tileset firstgid="1" source="./updated blue.tsx"/>
  <layer id="2" name="floors" width="30" height="20" visible="True">
+=======
+<map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="30" height="20" tilewidth="16" tileheight="16" infinite="0" nextlayerid="5" nextobjectid="2">
+ <tileset firstgid="1" source="updated blue.tsx"/>
+ <layer id="2" name="floors" width="30" height="20" visible="0">
+>>>>>>> 198b65e954e3014aaee0e837e0cfaaf70e4fea24
   <data encoding="csv">
 19,37,10,37,28,19,10,28,37,28,37,28,28,28,10,28,19,37,10,28,10,19,10,19,28,28,28,37,37,37,
 10,10,19,28,10,19,19,19,10,28,37,10,10,28,28,19,37,28,28,19,19,37,37,28,19,19,28,28,19,19,
@@ -29,7 +35,7 @@
   <data encoding="csv">
 12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,
 12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,
-12,35,21,21,21,17,21,21,21,21,21,21,36,12,12,12,12,35,21,21,21,21,21,21,17,21,21,21,36,12,
+12,35,21,21,21,17,37,21,21,21,21,21,36,12,12,12,12,35,21,21,21,21,21,21,17,21,21,21,36,12,
 12,13,30,30,30,18,30,30,30,30,30,30,11,12,12,12,12,13,30,30,30,30,30,30,18,30,30,30,11,12,
 12,13,39,39,39,18,39,39,39,39,39,39,11,12,12,12,12,13,39,39,39,39,39,39,18,39,39,39,11,12,
 12,13,10,19,37,23,10,37,37,19,19,28,20,21,21,21,21,22,37,10,28,19,37,37,23,28,10,19,11,12,
@@ -49,7 +55,7 @@
 12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12,12
 </data>
  </layer>
- <layer id="3" name="wall_collision" width="30" height="20" visible="False">
+ <layer id="3" name="wall_collision" width="30" height="20" visible="0">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
@@ -73,4 +79,10 @@
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0
 </data>
  </layer>
+<<<<<<< HEAD
+=======
+ <objectgroup id="4" name="player_location" visible="0">
+  <object id="1" x="12.5" y="160.5"/>
+ </objectgroup>
+>>>>>>> 198b65e954e3014aaee0e837e0cfaaf70e4fea24
 </map>
