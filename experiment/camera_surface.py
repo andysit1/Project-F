@@ -91,13 +91,7 @@ class Player(pg.sprite.Sprite):
     def update(self):
     # Move the player.
       self.pos += self.vel
-      distance_from_center = self.pos.distance_to(self.origin)
-
-    # Clamp the player within 5 meters radius of the center
-      if distance_from_center <= self.MAX_DISTANCE * 10:  # Convert meters to pixels (1 meter = 100 pixels)
-        self.rect.center = self.pos
-      else:
-        self.pos -= self.vel
+      self.rect.center = self.pos
 
 
     # Update player's rectangle position
@@ -150,8 +144,6 @@ while running:
             running = False
 
     player.update()
-    # Update camera
-    camera.update()
 
     world_surface.fill(BACKGROUND_COLOR)
 
@@ -172,7 +164,7 @@ while running:
     # print(camera.origin)
     #draw the camera surface... here...
     pg.display.flip()
-    clock.tick(60)
+    clock.tick(80)
 
 pg.quit()
 sys.exit()
