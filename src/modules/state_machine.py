@@ -62,6 +62,7 @@ class State():
         """
         pass
 
+
 class Machine:
     """
     Manages transitions between different game states.
@@ -81,6 +82,7 @@ class Machine:
             self.current = self.next_state
             self.next_state = None
 
+
 class DisplayEngine:
     """
     Manages the main game loop and display functionality.
@@ -98,6 +100,8 @@ class DisplayEngine:
         """
         pygame.display.set_caption(caption)
         self.surface = pygame.display.set_mode((width, height), flags)
+        self.screen_width = width
+        self.screen_height = height
         self.rect = self.surface.get_rect()
         self.clock = pygame.time.Clock()
         self.running = True

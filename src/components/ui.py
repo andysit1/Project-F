@@ -38,7 +38,7 @@ class Interface():
     self.h_end_angle = 0
 
   def on_draw(self, surface : pg.Surface):
-    surface.blit(self.player.right, (0, 0))     #draws our placeholder frog located in the top left
+    surface.blit(self.player.ui_pfp, (0, 0))     #draws our placeholder frog located in the top left
 
     pg.draw.arc(surface, "red", (-self.h_radius + self.h_offset, -self.h_radius + self.h_offset, 2 * self.h_radius, 2 * self.h_radius),
                     self.start_angle, self.h_end_angle, 4)
