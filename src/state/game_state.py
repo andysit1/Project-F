@@ -1,12 +1,13 @@
 import pygame as pg
 from random import randrange
 from pygame.math import Vector2
-from modules.state_machine import State
+from modules.state_machine import State, Machine
 from components.player import Player
 from components.enemy import Enemy
 from components.ui import Interface
 from components.camera import Camera
-from settings import Settings
+from settings import Settings, MapSettings
+
 
 '''
   --- GameState class ---
@@ -22,7 +23,6 @@ from settings import Settings
 '''
 
 
-
 class GameState(State):
   def __init__(self, engine):
     super().__init__(engine)
@@ -36,56 +36,40 @@ class GameState(State):
     # Makes camera and player at 400, 300. Adds player to all_sprites
     self.camera = Vector2(400, 300)
     self.player = Player((400, 300), all_sprites)
+    self.map_settings = MapSettings()        #init map settings
+    self.map_machine = Machine()
+    self.map_machine.current = self.map_settings.maps.get("base") #set the first state as base
+    self.map_machine.current.group.add(self.player)
+
+
     self.ui = Interface(self.player)
-
     self.camera_view = Camera(self.player)
-
-    #preset the world size to 4000, 4000 pixels
-    self.world_surface = pg.Surface((2000, 2000))
 
     # Spawns 200 fly enemies at random locations
     #MOST TIME CONSUMING...
     self.flies = []
     for _ in range(30):
-      self.flies.append(Enemy(self.player, (randrange(0, 2000), randrange(0, 2000)), self.settings.enemy_sprite['fly'], 20, all_sprites))
+      fly_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['fly'], 20, all_sprites)
+      self.flies.append(fly_obj)
+      self.map_machine.current.group.add(fly_obj)
     # Spawns 5 wasp enemies at random locations
     self.wasps = []
     for _ in range(30):
-      self.wasps.append(Enemy(self.player, (randrange(0, 2000), randrange(0, 2000)), self.settings.enemy_sprite['wasp'], 40, all_sprites))
+      wasp_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['wasp'], 40, all_sprites)
+      self.wasps.append(wasp_obj)
+      self.map_machine.current.group.add(wasp_obj)
 
   # What is done on each frame when drawn
   def on_draw(self):
-    #Fills screen with tiles (stole code from internet)
-    ts, w, h, c1, c2 = 80, *self.world_surface.get_size(), (69, 170, 69), (80, 180, 80)
-    tiles = [((x*ts, y*ts, ts, ts), c1 if (x+y) % 2 == 0 else c2) for x in range((w+ts-1)//ts) for y in range((h+ts-1)//ts)]
-    [pg.draw.rect(self.world_surface, color, rect) for rect, color in tiles]
-
-    #DRAWING IN WORLD
-    # Draws all fly enemies
-    for fly in self.flies:
-      #removes dead flies
-      self.wasps = [wasp for wasp in self.wasps if wasp.health > 0]
-      fly.on_draw(self.world_surface)
-
-    # Draws all wasp enemies
-    for wasp in self.wasps:
-      #removes dead wasps
-      self.flies = [fly for fly in self.flies if fly.health > 0]
-      wasp.on_draw(self.world_surface)
-
-    #draws the player particle effects
-    self.player.player_particles.on_draw(self.world_surface)
-
-    #draws player based in
-    # rld location on surface
-    self.world_surface.blit(self.player.image, self.player.rect.topleft)
 
     #DRAWING CAMERA VIEW
     #this draw the camera surface based on the focus on the position of player
-    self.camera_view.view.blit(self.world_surface, self.camera_view.viewpointPosition())
+    view = -self.camera_view.viewpointPosition() + self.player.pos
+    self.map_machine.current.on_draw(self.engine.surface, view)
 
     #draws the ui onto the camera surface so it doesn't get effected by the offset
-    self.ui.on_draw(self.camera_view.view)
+    self.ui.on_draw(self.engine.surface)
+    pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
 
     # --- Junk test code for info on screen ---
     # velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))
@@ -95,7 +79,6 @@ class GameState(State):
   def on_event(self, event):
     # Calls player's handle_event function (player's movements and attacks)
     self.player.handle_event(event=event, dt=self.dt)
-
     # If space is pressed, player attacks enemies
     if event.type == pg.KEYDOWN:
       if event.key == pg.K_SPACE:
@@ -111,11 +94,13 @@ class GameState(State):
   # Updates relevant game state information
   def on_update(self, delta):
     self.dt = delta
-    self.player.update(delta)
+
+    #checks if there's a new update for next state
+    self.map_machine.current.on_update(delta)
+
+    #checks if sprite.feet is colliding with wall tiles
+    for sprite in self.map_machine.current.group.sprites():
+      if sprite.feet.collidelist(self.map_machine.current.walls) > -1:
+          sprite.move_back(delta)
+
     self.ui.on_update()
-    # Updates all fly enemies
-    for fly in self.flies:
-      fly.update(delta)
-    # Updates all wasp enemies
-    for wasp in self.wasps:
-      wasp.update(delta)

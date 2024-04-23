@@ -20,6 +20,7 @@ class Player(pg.sprite.Sprite):
         super().__init__(*groups)
         settings = Settings()
         #import, load, and convert image to Surface, then scale it to 70x70
+        self.ui_pfp = settings.character_sprite['ui'].convert_alpha()
         self.up = settings.character_sprite['up'].convert_alpha()
         self.down = settings.character_sprite['down'].convert_alpha()
         self.right = settings.character_sprite['right'].convert_alpha()
@@ -29,7 +30,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 400
+        self.speed = 300
         self.dash_timer : float = 0.0   #in seconds
         self.dash_time_length_seconds : float = 0.3 #in seconds
         self.dash_time_cooldown : float = 0.2
@@ -40,6 +41,9 @@ class Player(pg.sprite.Sprite):
         #this health variable changes the ui
         self.health = 50
 
+        #feet variable is used for wall collisions
+        self.feet = pg.Rect(self.pos.x, self.pos.y, self.rect.width * 0.5, 8)
+        self._old_position = None
     # Handles player actions based on key presses
     def handle_event(self, event, dt):
 
@@ -52,7 +56,7 @@ class Player(pg.sprite.Sprite):
         if event.type == pg.KEYDOWN and event.key == pg.K_z:
             #only add the timer when not active or below 0
             if self.dash_timer <= -self.dash_time_cooldown:
-                self.player_particles.generate_particles_frog_dash() #generates the particles
+                # self.player_particles.generate_particles_frog_dash() #generates the particles
                 self.dash_timer = self.dash_time_length_seconds
                 self.dash_vel = self.vel * 2   #takes the current velocity at that given moment based on key input
 
@@ -95,8 +99,19 @@ class Player(pg.sprite.Sprite):
         except:
             pass
 
+    def move_back(self, dt: float) -> None:
+#         """
+#         If called after an update, the sprite can move back
+        # """
+        print('hit')
+        self.pos = self._old_position
+        self.rect.center = self.pos
+        self.feet.midbottom = self.rect.midbottom
+
     # Updates player positions based on velocity
     def update(self, dt):
+        self._old_position = self.pos.copy()
+
         #you multiple dt by 1 since you want to scale 1 second of time to be consistent
         self.dash_timer -= 1 * dt
         #if we have a dash_timer active then we need to add the dash vel instead of the normal velocity of walking
@@ -112,3 +127,6 @@ class Player(pg.sprite.Sprite):
             self.image = self.keypressed[0]
         else:
             self.keypressed.clear()
+
+        #update the feet location based on the player mid bottom position
+        self.feet.midbottom = self.rect.midbottom
