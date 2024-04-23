@@ -33,6 +33,8 @@ class Enemy(pg.sprite.Sprite):
 
     #particles
     self.enemy_particles = Particles(self)
+    self.feet = pg.Rect(self.pos.x, self.pos.y, self.rect.width * 0.5, 8)
+
 
   def update(self, dt):
 
@@ -50,23 +52,25 @@ class Enemy(pg.sprite.Sprite):
     self.pos += self.vel
     self.rect.center = self.pos
 
-  def on_draw(self, surface : pg.Surface):
-    # Draws the enemy
-    surface.blit(self.image, self.rect.topleft)
-    self.enemy_particles.on_draw(surface)
-    # Draws the health bar above the enemy
-    if ((self.pos - self.player.pos).magnitude() < 300):
-      pg.draw.rect(surface, "black", (self.pos.x - self.size.x/2 - 2, self.pos.y - self.size.y/2 - 6, self.size.x + 4, 7))
-      # Draws the health bar yellow if the enemy is swallowable
-      if(self.swallowable):
-        pg.draw.rect(surface, "yellow", (self.pos.x - self.size.x/2, self.pos.y - self.size.y/2 - 5, (self.health / self.max_health) * self.size.x, 5))
-      else:
-        pg.draw.rect(surface, "red", (self.pos.x - self.size.x/2, self.pos.y - self.size.y/2 - 5, (self.health / self.max_health) * self.size.x, 5))
 
-  # Hurts the enemy
+  #need figure a work around as it's not drawing with the new map layout
+
+  # def draw(self, surface : pg.Surface):
+  #   # Draws the enemy
+  #   surface.blit(self.image, self.rect.topleft)
+  #   self.enemy_particles.on_draw(surface)
+  #   # Draws the health bar above the enemy
+  #   if ((self.pos - self.player.pos).magnitude() < 300):
+  #     pg.draw.rect(surface, "black", (self.pos.x - self.size.x/2 - 2, self.pos.y - self.size.y/2 - 6, self.size.x + 4, 7))
+  #     # Draws the health bar yellow if the enemy is swallowable
+  #     if(self.swallowable):
+  #       pg.draw.rect(surface, "yellow", (self.pos.x - self.size.x/2, self.pos.y - self.size.y/2 - 5, (self.health / self.max_health) * self.size.x, 5))
+  #     else:
+  #       pg.draw.rect(surface, "red", (self.pos.x - self.size.x/2, self.pos.y - self.size.y/2 - 5, (self.health / self.max_health) * self.size.x, 5))
+
+  # # Hurts the enemy
   def hurt_enemy(self, damage):
     self.health -= damage
-
     # Generate blood particles
     self.enemy_particles.generate_particles_blood()
     # Knockback effect
@@ -76,3 +80,8 @@ class Enemy(pg.sprite.Sprite):
       # Updates position of enemy
       self.pos += self.vel
       self.rect.center = self.pos
+
+  #implement later...
+  #this is supposed be a response to when enemies colide into the wall
+  def move_back(self, dt):
+    pass
