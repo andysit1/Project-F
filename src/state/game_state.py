@@ -3,7 +3,7 @@ from random import randrange
 from pygame.math import Vector2
 from modules.state_machine import State, Machine
 from components.player import Player
-from components.enemy import Enemy
+from components.enemy import Enemy, HealthBar
 from components.ui import Interface
 from components.camera import Camera
 from settings import Settings, MapSettings
@@ -50,14 +50,19 @@ class GameState(State):
     self.flies = []
     for _ in range(30):
       fly_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['fly'], 20, all_sprites)
+      health_bar_obj = HealthBar(fly_obj)
       self.flies.append(fly_obj)
       self.map_machine.current.group.add(fly_obj)
+      self.map_machine.current.group.add(health_bar_obj)
     # Spawns 5 wasp enemies at random locations
     self.wasps = []
     for _ in range(30):
       wasp_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['wasp'], 40, all_sprites)
+      health_bar_obj = HealthBar(wasp_obj)
+
       self.wasps.append(wasp_obj)
       self.map_machine.current.group.add(wasp_obj)
+      self.map_machine.current.group.add(health_bar_obj)
 
   # What is done on each frame when drawn
   def on_draw(self):
