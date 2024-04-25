@@ -44,11 +44,14 @@ class Enemy(pg.sprite.Sprite):
     if (self.health <= self.max_health/4):
       self.swallowable = True
 
-    # If the player is within 300 pixels of the enemy, the enemy will move towards the player
-    if ((self.pos - self.player.pos).magnitude() < 300):
-      self.vel = (self.player.pos - self.pos).normalize() * self.speed * dt
+      
+    player_to_enemy_vector : pg.Vector2 = (self.player.pos - self.pos)
+    is_enemy_in_range_of_player = player_to_enemy_vector.magnitude() < 300
+
+    if (is_enemy_in_range_of_player): 
+      self.vel = player_to_enemy_vector.normalize() * self.speed * dt
     else:
-      self.vel = Vector2(0, 0)
+      self.vel = (0,0)
 
     # Updates position of enemy
     self.pos += self.vel
@@ -75,7 +78,13 @@ class Enemy(pg.sprite.Sprite):
   def move_back(self, dt):
     pass
 
-#inorder for the health bar to draw in the world accordingly we need to make a sprite version of the health bar
+
+#instead of init a new healthbar surface each time we should init all possible surfaces healthbar surfaces into a dict in settings 
+#this way to reduce init cost of run time
+
+
+
+#healthbar Sprite version. 
 class HealthBar(pg.sprite.Sprite):
   def __init__(self, focus : Enemy, *groups):
     super().__init__(*groups)
@@ -86,7 +95,7 @@ class HealthBar(pg.sprite.Sprite):
     self.size_bar_y = 7
     self.is_visible = False
 
-    #focus variables...
+    #entity variables...
     self.focus = focus
     self.old_pos = None
     self.health = focus.health
@@ -95,8 +104,6 @@ class HealthBar(pg.sprite.Sprite):
 
 
     self.move_back = focus.move_back
-
-
     #visual variables...
     self.image = pg.Surface([self.size_bar_x, self.size_bar_y])
     self.image.fill("red")
