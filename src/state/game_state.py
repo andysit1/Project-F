@@ -49,7 +49,7 @@ class GameState(State):
     #MOST TIME CONSUMING...
     self.flies = []
     for _ in range(30):
-      fly_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['fly'], 20, all_sprites)
+      fly_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['fly'].convert_alpha(), 20, all_sprites)
       health_bar_obj = HealthBar(fly_obj)
       self.flies.append(fly_obj)
       self.map_machine.current.group.add(fly_obj)
@@ -57,7 +57,7 @@ class GameState(State):
     # Spawns 5 wasp enemies at random locations
     self.wasps = []
     for _ in range(30):
-      wasp_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['wasp'], 40, all_sprites)
+      wasp_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['wasp'].convert_alpha(), 40, all_sprites)
       health_bar_obj = HealthBar(wasp_obj)
 
       self.wasps.append(wasp_obj)
