@@ -103,7 +103,6 @@ class Player(pg.sprite.Sprite):
 #         """
 #         If called after an update, the sprite can move back
         # """
-        print('hit')
         self.pos = self._old_position
         self.rect.center = self.pos
         self.feet.midbottom = self.rect.midbottom

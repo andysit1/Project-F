@@ -38,44 +38,52 @@ class Enemy(pg.sprite.Sprite):
     self.feet = pg.Rect(self.pos.x, self.pos.y, self.rect.width * 0.5, 8)
 
 
+  def update_position(self):
+    self.pos += self.vel
+    self.rect.center = self.pos
+
   def update(self, dt):
 
     # Checks if enemy is swallowable
     if (self.health <= self.max_health/4):
       self.swallowable = True
 
-    # If the player is within 300 pixels of the enemy, the enemy will move towards the player
-    if ((self.pos - self.player.pos).magnitude() < 300):
-      self.vel = (self.player.pos - self.pos).normalize() * self.speed * dt
+    player_to_enemy_vector : pg.Vector2 = (self.player.pos - self.pos)
+    is_enemy_in_range_of_player = player_to_enemy_vector.magnitude() < 300
+
+    if (is_enemy_in_range_of_player):
+      self.vel = player_to_enemy_vector.normalize() * self.speed * dt
     else:
-      self.vel = Vector2(0, 0)
+      self.vel = (0,0)
 
-    # Updates position of enemy
-    self.pos += self.vel
-    self.rect.center = self.pos
-
+    self.update_position()
 
   #need figure a work around as it's not drawing with the new map layout
 
   # # Hurts the enemy
   def hurt_enemy(self, damage):
     self.health -= damage
-    # Generate blood particles
-    self.enemy_particles.generate_particles_blood()
-    # Knockback effect
-    if (self.pos - self.player.pos).magnitude() != 0:
-      self.vel = (self.pos - self.player.pos).normalize() * 10 # <- Knockback amount
 
-      # Updates position of enemy
-      self.pos += self.vel
-      self.rect.center = self.pos
+    knockback_velocity = (self.pos - self.player.pos).normalize() * 10
+    self.vel = knockback_velocity
+
+    self.update_position()
+
 
   #implement later...
   #this is supposed be a response to when enemies colide into the wall
+  #I want a function to break the x, y and apply it seperately to the vel so it should still move down if we are moving diagonally
   def move_back(self, dt):
     pass
 
-#inorder for the health bar to draw in the world accordingly we need to make a sprite version of the health bar
+
+
+
+#Notes:
+#instead of init a new healthbar surface each time we should init all possible surfaces healthbar surfaces into a dict in settings
+#this way to reduce init cost of run time
+
+#healthbar Sprite version.
 class HealthBar(pg.sprite.Sprite):
   def __init__(self, focus : Enemy, *groups):
     super().__init__(*groups)
@@ -86,17 +94,16 @@ class HealthBar(pg.sprite.Sprite):
     self.size_bar_y = 7
     self.is_visible = False
 
-    #focus variables...
+    #entity variables...
     self.focus = focus
     self.old_pos = None
     self.health = focus.health
+    self.old_health = None
     self.max_health = focus.max_health
     self.swallowable = False
 
 
     self.move_back = focus.move_back
-
-
     #visual variables...
     self.image = pg.Surface([self.size_bar_x, self.size_bar_y])
     self.image.fill("red")
@@ -104,36 +111,50 @@ class HealthBar(pg.sprite.Sprite):
     self.rect = self.image.get_rect(center=self.focus.pos)
 
 
-  def update(self, dt):
-
-    #update the positions and health
+  #helper functions -> abstract into a base entity class?
+  def update_position(self):
     self.rect.center = self.focus.pos
     self.health = self.focus.health
 
-    #if moved then we know it is in range
-    if self.old_pos == self.focus.pos:
-      self.is_visible = False
-      self.image.set_alpha(0)  #make transparent
+  def make_transpart(self):
+    self.is_visible = False
+    self.image.set_alpha(0)
+
+  def make_visible(self):
+    self.is_visible = True
+    self.image.set_alpha(255)
+
+
+  def on_health_changes(self):
+    if (self.health <= self.max_health/4):
+          self.swallowable = True
+          self.image.fill("yellow")
+
+    if self.health < 0:
+      self.focus.kill()
+      self.kill()
+
+
+    health_to_maxhealth_ratio = self.size_bar_x * (self.health / self.max_health)
+    try:
+      self.image = pg.transform.scale(self.image, [health_to_maxhealth_ratio, self.size_bar_y])
+    except:
+      pass
+
+
+  def update(self, dt):
+    self.update_position()
+
+    #concept: health bar should only appear when enemies are active
+    is_same_position = self.old_pos == self.focus.pos
+    is_different_health = self.old_health != self.health
+    if is_same_position:
+      self.make_transpart()
     else:
-      self.is_visible = True
-      self.image.set_alpha(255) #make not transparent
+      self.make_visible()
 
-
-    if self.is_visible:
-      if (self.health <= self.max_health/4):
-            self.swallowable = True
-            self.image.fill("yellow")
-
-      if self.health < 0:
-        self.focus.kill()
-        self.kill()
-
-      #is there a way to not have to run this each iteration to improve performance
-      #not sure if it matters since it's constant and not a loop but still transforming seems to be an resource intensive function
-      try:
-        #resizes the image base on remaining health
-        self.image = pg.transform.scale(self.image, [self.size_bar_x * (self.health / self.max_health), self.size_bar_y])
-      except:
-        pass
+    if is_different_health:
+      self.on_health_changes()
 
     self.old_pos = self.focus.pos.copy()
+    self.old_health = self.health
