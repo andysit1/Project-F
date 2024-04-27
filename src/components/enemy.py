@@ -137,18 +137,3 @@ class HealthBar(pg.sprite.Sprite):
         pass
 
     self.old_pos = self.focus.pos.copy()
-
-
-
-# def draw(self, surface : pg.Surface):
-#   # Draws the enemy
-#   surface.blit(self.image, self.rect.topleft)
-#   self.enemy_particles.on_draw(surface)
-#   # Draws the health bar above the enemy
-#   if ((self.pos - self.player.pos).magnitude() < 300):
-#     pg.draw.rect(surface, "black", (self.pos.x - self.size.x/2 - 2, self.pos.y - self.size.y/2 - 6, self.size.x + 4, 7))
-#     # Draws the health bar yellow if the enemy is swallowable
-#     if(self.swallowable):
-#       pg.draw.rect(surface, "yellow", (self.pos.x - self.size.x/2, self.pos.y - self.size.y/2 - 5, (self.health / self.max_health) * self.size.x, 5))
-#     else:
-#       pg.draw.rect(surface, "red", (self.pos.x - self.size.x/2, self.pos.y - self.size.y/2 - 5, (self.health / self.max_health) * self.size.x, 5))
