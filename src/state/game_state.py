@@ -7,6 +7,7 @@ from components.enemy import Enemy, HealthBar
 from components.ui import Interface
 from components.camera import Camera
 from settings import Settings, MapSettings
+from components.particles import ParticleGenerator
 
 
 '''
@@ -44,6 +45,7 @@ class GameState(State):
 
     self.ui = Interface(self.player)
     self.camera_view = Camera(self.player)
+    self.particle_gen = ParticleGenerator()
 
     self.flies = []
     for _ in range(30):
@@ -90,6 +92,9 @@ class GameState(State):
           #checks if player collides with fly, hurts it
           if self.player.rect.colliderect(fly.rect):
             fly.hurt_enemy(5)
+            # particle_obj = self.particle_gen.generate_blood_particles(fly)
+            # self.map_machine.current.group.add(particle_obj)
+
           #checks if player collides with fly, hurts it
         for wasp in self.wasps:
           if self.player.rect.colliderect(wasp.rect):
@@ -104,7 +109,9 @@ class GameState(State):
 
     #checks if sprite.feet is colliding with wall tiles
     for sprite in self.map_machine.current.group.sprites():
-      if sprite.feet.collidelist(self.map_machine.current.walls) > -1:
-          sprite.move_back(delta)
-
+      try:
+        if sprite.feet.collidelist(self.map_machine.current.walls) > -1:
+            sprite.move_back(delta)
+      except:
+        pass
     self.ui.on_update()

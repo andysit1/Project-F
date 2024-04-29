@@ -1,6 +1,5 @@
 import pygame as pg
 from pygame.math import Vector2
-from components.particles import Particles
 from settings import Settings
 
 '''
@@ -35,7 +34,6 @@ class Player(pg.sprite.Sprite):
         self.dash_time_length_seconds : float = 0.3 #in seconds
         self.dash_time_cooldown : float = 0.2
         self.dash_vel = Vector2(0, 0)
-        self.player_particles = Particles(self) #init the particles system for player
         self.max_health = 100
 
         #this health variable changes the ui
@@ -56,7 +54,6 @@ class Player(pg.sprite.Sprite):
         if event.type == pg.KEYDOWN and event.key == pg.K_z:
             #only add the timer when not active or below 0
             if self.dash_timer <= -self.dash_time_cooldown:
-                # self.player_particles.generate_particles_frog_dash() #generates the particles
                 self.dash_timer = self.dash_time_length_seconds
                 self.dash_vel = self.vel * 2   #takes the current velocity at that given moment based on key input
 
