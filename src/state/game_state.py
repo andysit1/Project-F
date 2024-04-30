@@ -9,6 +9,8 @@ from components.camera import Camera
 from settings import Settings, MapSettings
 from components.particles import ParticleGenerator
 from components.attack import AttackHandler
+from components.attack import AttackSprite
+
 
 
 '''
@@ -69,9 +71,11 @@ class GameState(State):
       self.map_machine.current.group.add(wasp_obj)
       self.map_machine.current.group.add(health_bar_obj)
       
-      
+    
     self.last_attack_rect = None  # To store the last attack hitbox
     self.attack_handler = AttackHandler(self)
+    self.map_machine.current.group.add(self.attack_handler.attack_sprite)
+
 
   # What is done on each frame when drawn
   def on_draw(self):
@@ -84,6 +88,9 @@ class GameState(State):
     #draws the ui onto the camera surface so it doesn't get effected by the offset
     self.ui.on_draw(self.engine.surface)
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
+    if self.last_attack_rect:
+            pg.draw.rect(self.engine.surface, pg.Color('red'), self.last_attack_rect, 2)
+    
     # --- Junk test code for info on screen ---
     # velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))
     # surface.blit(velocity_text, (20, 20))
