@@ -35,6 +35,7 @@ class Player(pg.sprite.Sprite):
         self.dash_time_cooldown : float = 0.2
         self.dash_vel = Vector2(0, 0)
         self.max_health = 100
+        self.direction = "down"
 
         #this health variable changes the ui
         self.health = 50
@@ -66,15 +67,19 @@ class Player(pg.sprite.Sprite):
             if event.key == pg.K_UP:
                 self.vel.y = -self.speed * dt
                 self.keypressed.append(self.up)
+                self.direction = "up"
             elif event.key == pg.K_DOWN:
                 self.vel.y = self.speed * dt
                 self.keypressed.append(self.down)
+                self.direction = "down"
             elif event.key == pg.K_RIGHT:
                 self.vel.x = self.speed * dt
                 self.keypressed.append(self.right)
+                self.direction = "right"
             elif event.key == pg.K_LEFT:
                 self.vel.x = -self.speed * dt
                 self.keypressed.append(self.left)
+                self.direction = "left"
         elif event.type == pg.KEYUP:
             if event.key == pg.K_UP and self.vel.y < 0:
                 self.vel.y = 0

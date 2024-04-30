@@ -8,6 +8,7 @@ from components.ui import Interface
 from components.camera import Camera
 from settings import Settings, MapSettings
 from components.particles import ParticleGenerator
+from components.attack import AttackHandler
 
 
 '''
@@ -27,6 +28,9 @@ from components.particles import ParticleGenerator
 class GameState(State):
   def __init__(self, engine):
     super().__init__(engine)
+    
+
+
     self.settings = Settings()               #init pygame surfaces
 
     self.dt = 0                              # Initializes delta time
@@ -64,6 +68,10 @@ class GameState(State):
       self.wasps.append(wasp_obj)
       self.map_machine.current.group.add(wasp_obj)
       self.map_machine.current.group.add(health_bar_obj)
+      
+      
+    self.last_attack_rect = None  # To store the last attack hitbox
+    self.attack_handler = AttackHandler(self)
 
   # What is done on each frame when drawn
   def on_draw(self):
@@ -76,7 +84,6 @@ class GameState(State):
     #draws the ui onto the camera surface so it doesn't get effected by the offset
     self.ui.on_draw(self.engine.surface)
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
-
     # --- Junk test code for info on screen ---
     # velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))
     # surface.blit(velocity_text, (20, 20))
@@ -88,17 +95,19 @@ class GameState(State):
     # If space is pressed, player attacks enemies
     if event.type == pg.KEYDOWN:
       if event.key == pg.K_SPACE:
-        for fly in self.flies:
-          #checks if player collides with fly, hurts it
-          if self.player.rect.colliderect(fly.rect):
-            fly.hurt_enemy(5)
-            # particle_obj = self.particle_gen.generate_blood_particles(fly)
-            # self.map_machine.current.group.add(particle_obj)
+        # for fly in self.flies:
+        #   #checks if player collides with fly, hurts it
+        #   if self.player.rect.colliderect(fly.rect):
+        #     fly.hurt_enemy(5)
+        #     # particle_obj = self.particle_gen.generate_blood_particles(fly)
+        #     # self.map_machine.current.group.add(particle_obj)
 
-          #checks if player collides with fly, hurts it
-        for wasp in self.wasps:
-          if self.player.rect.colliderect(wasp.rect):
-              wasp.hurt_enemy(5)
+        #   #checks if player collides with fly, hurts it
+        # for wasp in self.wasps:
+        #   if self.player.rect.colliderect(wasp.rect):
+        #       wasp.hurt_enemy(5)
+        self.attack_handler.perform_attack()
+
 
   # Updates relevant game state information
   def on_update(self, delta):
