@@ -102,7 +102,6 @@ class MapSettings():
         for layer in surf:
             if layer.name == "wall_collision":
                 for obj in layer:
-                    print(obj)
                     if obj[2] != 0:
                         walls.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
 
