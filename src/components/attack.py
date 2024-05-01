@@ -58,7 +58,7 @@ class AttackSprite(Moving_Sprite):
         super().__init__(focus, *groups)
         self.attack_width = 45
         self.attack_height = 10
-        self.horizonal_surface = pg.Surface([self.attack_width, self.attack_height])
+        self.horizontal_surface = pg.Surface([self.attack_width, self.attack_height])
         self.vertical_surface = pg.Surface([self.attack_height, self.attack_width])
 
 
@@ -68,6 +68,7 @@ class AttackSprite(Moving_Sprite):
         for enemy in hit_list:
             if enemy.swallowable:
                 enemy.kill()
+                # to do add hp to player
             else:
                 enemy.hurt_enemy(5)  # Apply damage
                 

@@ -57,10 +57,10 @@ class Moving_Sprite(Base_Sprite):
       'down' : None
     }
     self.selected_point = 'right'
-    self.horizonal_surface = pg.Surface([30, 5]).convert()
+    self.horizontal_surface = pg.Surface([30, 5]).convert()
     self.vertical_surface = pg.Surface([5, 30]).convert()
 
-    self.image = self.horizonal_surface
+    self.image = self.horizontal_surface
     self.make_visible()
     self.rect = self.image.get_rect()
     self.pos_rect = pg.Rect(0, 0, 5, 5)
@@ -89,7 +89,7 @@ class Moving_Sprite(Base_Sprite):
     self.horizontal_vertical = 1
 
   def change_horizontal_surface(self):
-    self.image = self.horizonal_surface
+    self.image = self.horizontal_surface
     self.rect = self.image.get_rect()
     self.horizontal_vertical = 0
 
