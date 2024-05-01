@@ -57,20 +57,26 @@ class AttackSprite(pg.sprite.Sprite):
         self.attack_width = 20  
         self.attack_height = 10
         self.visible = False
-        self.image = pg.Surface([self.attack_width, self.attack_height])
+        self.image = pg.Surface([self.attack_height, self.attack_width])
         self.image.fill("red")
         self.image.set_alpha(0)
-        self.rect = self.focus.attack_rect
+        self.rect = self.image.get_rect()  # Initialize rect with a valid pygame.Rect object
 
     def update(self, attack_rect=None):
         if attack_rect:
-            self.image = pg.Surface((self.attack_width, self.attack_height))
-            self.image.fill(pg.Color('red'))  # Fill the surface with red
-            self.rect = attack_rect
+            if isinstance(attack_rect, (list, tuple)):
+                self.rect = pg.Rect(*attack_rect)  # Create a new Rect from the attack_rect tuple
+            elif isinstance(attack_rect, pg.Rect):
+                self.rect = attack_rect  # If attack_rect is already a Rect, assign it directly
+            else:
+                # Handle other data types as needed
+                pass            
+            if self.focus.game_state.player.direction in ("up", "down"):
+                self.image = pg.Surface([self.attack_height, self.attack_width])
+            else:
+                self.image = pg.Surface([self.attack_width, self.attack_height])
             self.visible = True
             self.image.set_alpha(255)
         else:
             self.visible = False  # Hide the sprite when not attacking
             self.image.set_alpha(0)
-
-            

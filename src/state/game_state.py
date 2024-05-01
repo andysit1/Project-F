@@ -74,7 +74,7 @@ class GameState(State):
     
     self.last_attack_rect = None  # To store the last attack hitbox
     self.attack_handler = AttackHandler(self)
-    # self.map_machine.current.group.add(self.attack_handler.attack_sprite)
+    self.map_machine.current.group.add(self.attack_handler.attack_sprite)
 
 
   # What is done on each frame when drawn
