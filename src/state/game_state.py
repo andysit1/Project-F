@@ -102,19 +102,10 @@ class GameState(State):
     # If space is pressed, player attacks enemies
     if event.type == pg.KEYDOWN:
       if event.key == pg.K_SPACE:
-        # for fly in self.flies:
-        #   #checks if player collides with fly, hurts it
-        #   if self.player.rect.colliderect(fly.rect):
-        #     fly.hurt_enemy(5)
-        #     # particle_obj = self.particle_gen.generate_blood_particles(fly)
-        #     # self.map_machine.current.group.add(particle_obj)
-
-        #   #checks if player collides with fly, hurts it
-        # for wasp in self.wasps:
-        #   if self.player.rect.colliderect(wasp.rect):
-        #       wasp.hurt_enemy(5)
         self.attack_handler.perform_attack()
-
+    if event.type == pg.KEYUP:
+      if event.key == pg.K_SPACE:
+        self.attack_handler.clear_attack()
 
   # Updates relevant game state information
   def on_update(self, delta):
