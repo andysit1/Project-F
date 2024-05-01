@@ -9,7 +9,7 @@ class SweepAttackSprite(Moving_Sprite):
         super().__init__(focus, *groups)
         self.attack_width = 30
         self.attack_height = 60
-        self.horizonal_surface = pg.Surface([self.attack_width, self.attack_height])
+        self.horizontal_surface = pg.Surface([self.attack_width, self.attack_height])
         self.vertical_surface = pg.Surface([self.attack_height, self.attack_width])
         self.attack_sequence = 0  # Track the current attack sequence stage
         self.last_attack_time = 0  # Time since the last attack input
