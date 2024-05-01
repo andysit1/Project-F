@@ -49,16 +49,18 @@ class GameState(State):
     self.camera_view = Camera(self.player)
     self.particle_gen = ParticleGenerator()
 
-    self.test_sprite = Moving_Sprite(self.player)
-    self.map_machine.current.group.add(self.test_sprite)
-    
+    # self.test_sprite = Moving_Sprite(self.player, self.map_machine.current.group)
+    self.attack_sprite_test = AttackSprite(self.player, self.map_machine.current.group)
 
+
+    self.enemy_group = pg.sprite.Group()
     self.flies = []
     for _ in range(30):
       fly_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['fly'].convert_alpha(), 20, all_sprites)
       health_bar_obj = HealthBar(fly_obj)
       self.flies.append(fly_obj)
       self.map_machine.current.group.add(fly_obj)
+      self.enemy_group.add(fly_obj)
       self.map_machine.current.group.add(health_bar_obj)
 
 
@@ -69,11 +71,12 @@ class GameState(State):
 
       self.wasps.append(wasp_obj)
       self.map_machine.current.group.add(wasp_obj)
+      self.enemy_group.add(wasp_obj)
       self.map_machine.current.group.add(health_bar_obj)
 
     self.last_attack_rect = None  # To store the last attack hitbox
-    self.attack_handler = AttackHandler(self)
-    self.map_machine.current.group.add(self.attack_handler.attack_sprite)
+    # self.attack_handler = AttackHandler(self)
+    # self.map_machine.current.group.add(self.attack_handler.attack_sprite)
 
 
   # What is done on each frame when drawn
@@ -101,10 +104,8 @@ class GameState(State):
     # If space is pressed, player attacks enemies
     if event.type == pg.KEYDOWN:
       if event.key == pg.K_SPACE:
-        self.attack_handler.perform_attack()
-    if event.type == pg.KEYUP:
-      if event.key == pg.K_SPACE:
-        self.attack_handler.clear_attack()
+        self.attack_sprite_test.perform_attack(self.enemy_group)
+
 
   # Updates relevant game state information
   def on_update(self, delta):
