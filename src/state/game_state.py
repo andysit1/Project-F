@@ -8,8 +8,8 @@ from components.ui import Interface
 from components.camera import Camera
 from settings import Settings, MapSettings
 from components.particles import ParticleGenerator
-from components.attack import AttackHandler
 from components.attack import AttackSprite
+from components.attack import SweepAttackSprite
 
 from modules.sprite_base import Moving_Sprite
 
@@ -51,6 +51,7 @@ class GameState(State):
 
     # self.test_sprite = Moving_Sprite(self.player, self.map_machine.current.group)
     self.attack_sprite_test = AttackSprite(self.player, self.map_machine.current.group)
+    self.attack_sweep = SweepAttackSprite(self.player, self.map_machine.current.group)
 
 
     self.enemy_group = pg.sprite.Group()
@@ -74,14 +75,12 @@ class GameState(State):
       self.enemy_group.add(wasp_obj)
       self.map_machine.current.group.add(health_bar_obj)
 
-    self.last_attack_rect = None  # To store the last attack hitbox
     # self.attack_handler = AttackHandler(self)
     # self.map_machine.current.group.add(self.attack_handler.attack_sprite)
 
 
   # What is done on each frame when drawn
   def on_draw(self):
-
     #DRAWING CAMERA VIEW
     #this draw the camera surface based on the focus on the position of player
     view = -self.camera_view.viewpointPosition() + self.player.pos
@@ -90,8 +89,6 @@ class GameState(State):
     #draws the ui onto the camera surface so it doesn't get effected by the offset
     self.ui.on_draw(self.engine.surface)
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
-    if self.last_attack_rect:
-            pg.draw.rect(self.engine.surface, pg.Color('red'), self.last_attack_rect, 2)
 
     # --- Junk test code for info on screen ---
     # velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))
@@ -105,6 +102,8 @@ class GameState(State):
     if event.type == pg.KEYDOWN:
       if event.key == pg.K_SPACE:
         self.attack_sprite_test.perform_attack(self.enemy_group)
+      elif event.key == pg.K_c:
+        self.attack_sweep.handle_attack_input(self.enemy_group)
 
 
   # Updates relevant game state information
