@@ -10,8 +10,6 @@ class AttackHandler:
         self.attack_rect = pg.Rect(0, 0, 0, 0)
         self.attack_sprite = AttackSprite(self, pg.sprite.Group())
 
-
-
     def perform_attack(self):
         player = self.game_state.player
         flies = self.game_state.flies
@@ -54,20 +52,22 @@ class AttackHandler:
         # Check for collision with enemies
         for enemy in flies + wasps:
             if self.attack_rect.colliderect(enemy.rect):
-                enemy.hurt_enemy(5)  # Apply damage
+                if enemy.swallowable:
+                    enemy.kill()
+                else:
+                    enemy.hurt_enemy(5)  # Apply damage
+                
+    def clear_attack(self):
+        self.attack_rect = pg.Rect(0, 0, 0, 0)  # Reset the attack_rect to an empty rectangle
+        self.attack_sprite.clear_attack_visual() 
 
-
-    def clear_attack_visual(self):
-        """Clear the attack rectangle after the attack is complete."""
-        self.attack_sprite.update()
-
+    
 class AttackSprite(pg.sprite.Sprite):
     def __init__(self, focus: AttackHandler, *groups):
         super().__init__(*groups)
         self.focus = focus
         self.attack_width = 20
         self.attack_height = 10
-        self.visible = False
         self.image = pg.Surface([self.attack_height, self.attack_width])
         self.image.fill("red")
         self.image.set_alpha(0)
@@ -86,8 +86,9 @@ class AttackSprite(pg.sprite.Sprite):
                 self.image = pg.Surface([self.attack_height, self.attack_width])
             else:
                 self.image = pg.Surface([self.attack_width, self.attack_height])
-            self.visible = True
             self.image.set_alpha(255)
-        else:
-            self.visible = False  # Hide the sprite when not attacking
-            self.image.set_alpha(0)
+            
+    def clear_attack_visual(self):
+        """Clear the attack rectangle after the attack is complete."""
+        self.image.set_alpha(0)
+        self.rect = self.image.get_rect()
