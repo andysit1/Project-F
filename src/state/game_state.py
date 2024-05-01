@@ -11,7 +11,7 @@ from components.particles import ParticleGenerator
 from components.attack import AttackHandler
 from components.attack import AttackSprite
 
-
+from modules.sprite_base import Moving_Sprite
 
 '''
   --- GameState class ---
@@ -26,13 +26,9 @@ from components.attack import AttackSprite
     on_update : Updates game state information each frame/update
 '''
 
-
 class GameState(State):
   def __init__(self, engine):
     super().__init__(engine)
-    
-
-
     self.settings = Settings()               #init pygame surfaces
 
     self.dt = 0                              # Initializes delta time
@@ -53,6 +49,10 @@ class GameState(State):
     self.camera_view = Camera(self.player)
     self.particle_gen = ParticleGenerator()
 
+    self.test_sprite = Moving_Sprite(self.player)
+    self.map_machine.current.group.add(self.test_sprite)
+    
+
     self.flies = []
     for _ in range(30):
       fly_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['fly'].convert_alpha(), 20, all_sprites)
@@ -70,8 +70,7 @@ class GameState(State):
       self.wasps.append(wasp_obj)
       self.map_machine.current.group.add(wasp_obj)
       self.map_machine.current.group.add(health_bar_obj)
-      
-    
+
     self.last_attack_rect = None  # To store the last attack hitbox
     self.attack_handler = AttackHandler(self)
     self.map_machine.current.group.add(self.attack_handler.attack_sprite)
@@ -90,7 +89,7 @@ class GameState(State):
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
     if self.last_attack_rect:
             pg.draw.rect(self.engine.surface, pg.Color('red'), self.last_attack_rect, 2)
-    
+
     # --- Junk test code for info on screen ---
     # velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))
     # surface.blit(velocity_text, (20, 20))
