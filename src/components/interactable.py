@@ -7,6 +7,9 @@
 #the difference is the sprite, radius to interact, and the result from the interaction
 
 import pygame as pg
+
+
+
 class Interactable(pg.sprite.Sprite):
   def __init__(self, *groups) -> None:
     super().__init__(*groups)

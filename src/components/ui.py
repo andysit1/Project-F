@@ -55,3 +55,40 @@ class Interface():
   #in the future if we want to character to blink red or something else we can code it in here...
   def on_event(self):
     pass
+
+
+
+
+class Dialogue():
+  def __init__(self):
+    self.text = "This is just an example text to use with gradual typing."
+    self.surf = pg.Surface((700,200), pg.SRCALPHA)
+    self.show_textbox = False
+    self.typing = False
+    self.surf.fill((0, 0, 255, 100))
+    self.rendering = ''
+    self.FONT = pg.font.SysFont(None, 24, 0)
+    self.textbox_rect = self.surf.get_rect(topleft=(150,200))
+    self.border_rect = self.surf.get_rect(topleft=(0, 0))
+
+
+  def draw_border(self):
+    self.surf.fill((0, 0, 255, 100))
+    pg.draw.rect(self.surf, "Black", self.border_rect, 6)
+
+  def draw(self, surface, txt):
+    self.draw_border()
+
+    for char in txt:
+        pg.time.delay(100)
+        pg.event.clear()
+
+        self.rendering = self.rendering + char
+        rendered_text = self.FONT.render(self.rendering, 1, 'White')
+        text_rect = rendered_text.get_rect(topleft=(20, 90))
+
+        self.surf.blit(rendered_text, text_rect)
+        surface.blit(self.surf, self.textbox_rect)
+        pg.display.flip()
+
+    self.rendering = ''

@@ -4,7 +4,7 @@ from pygame.math import Vector2
 from modules.state_machine import State, Machine
 from components.player import Player
 from components.enemy import Enemy, HealthBar
-from components.ui import Interface
+from components.ui import Interface, Dialogue
 from components.camera import Camera
 from settings import Settings, MapSettings
 from components.particles import ParticleGenerator
@@ -47,6 +47,10 @@ class GameState(State):
     self.attack_sprite_test = AttackSprite(self.player, self.map_machine.current.group)
     self.attack_sweep = SweepAttackSprite(self.player, self.map_machine.current.group)
 
+
+
+
+    self.dialogue = Dialogue()
   #we need a function to make a new tile map to swap all the values
 
 
@@ -61,9 +65,7 @@ class GameState(State):
     self.ui.on_draw(self.engine.surface)
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
 
-    # --- Junk test code for info on screen ---
-    # velocity_text = font.render(f"Velocity: {self.player.vel.length()}", True, pg.Color('white'))
-    # surface.blit(velocity_text, (20, 20))
+
 
   # Handles events (ie. key presses)
   def on_event(self, event):
@@ -75,6 +77,10 @@ class GameState(State):
         self.attack_sprite_test.perform_attack(self.enemy_group)
       elif event.key == pg.K_c:
         self.attack_sweep.handle_attack_input(self.enemy_group)
+      elif event.key == pg.K_0:
+        print('trigger')
+        
+        self.dialogue.draw(self.engine.surface, "This is just an example text to use with gradual typing.")
 
 
   # Updates relevant game state information
