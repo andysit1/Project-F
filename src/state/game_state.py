@@ -11,8 +11,6 @@ from components.particles import ParticleGenerator
 from components.attack import AttackSprite
 from components.attack import SweepAttackSprite
 
-from modules.sprite_base import Moving_Sprite
-
 '''
   --- GameState class ---
   This class is responsible for managing the game state, which includes everything currently loaded into the game.
@@ -34,49 +32,22 @@ class GameState(State):
     self.dt = 0                              # Initializes delta time
     self.clock = pg.time.Clock()             # Needed clock thing?
     font = pg.font.SysFont('comicsans', 15)  # Initializes font
-    all_sprites = pg.sprite.Group()          # Makes all_sprites group for keeping all entities together to load
 
-    # Makes camera and player at 400, 300. Adds player to all_sprites
-    self.camera = Vector2(400, 300)
-    self.player = Player((400, 300), all_sprites)
     self.map_settings = MapSettings()        #init map settings
     self.map_machine = Machine()
     self.map_machine.current = self.map_settings.maps.get("base") #set the first state as base
-    self.map_machine.current.group.add(self.player)
 
+    self.player = self.map_machine.current.player
+    self.enemy_group = self.map_machine.current.enemy_grp
 
     self.ui = Interface(self.player)
     self.camera_view = Camera(self.player)
     self.particle_gen = ParticleGenerator()
 
-    # self.test_sprite = Moving_Sprite(self.player, self.map_machine.current.group)
     self.attack_sprite_test = AttackSprite(self.player, self.map_machine.current.group)
     self.attack_sweep = SweepAttackSprite(self.player, self.map_machine.current.group)
 
-
-    self.enemy_group = pg.sprite.Group()
-    self.flies = []
-    for _ in range(30):
-      fly_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['fly'].convert_alpha(), 20, all_sprites)
-      health_bar_obj = HealthBar(fly_obj)
-      self.flies.append(fly_obj)
-      self.map_machine.current.group.add(fly_obj)
-      self.enemy_group.add(fly_obj)
-      self.map_machine.current.group.add(health_bar_obj)
-
-
-    self.wasps = []
-    for _ in range(30):
-      wasp_obj = Enemy(self.player, (randrange(0, 1080), randrange(0, 1080)), self.settings.enemy_sprite['wasp'].convert_alpha(), 40, all_sprites)
-      health_bar_obj = HealthBar(wasp_obj)
-
-      self.wasps.append(wasp_obj)
-      self.map_machine.current.group.add(wasp_obj)
-      self.enemy_group.add(wasp_obj)
-      self.map_machine.current.group.add(health_bar_obj)
-
-    # self.attack_handler = AttackHandler(self)
-    # self.map_machine.current.group.add(self.attack_handler.attack_sprite)
+  #we need a function to make a new tile map to swap all the values
 
 
   # What is done on each frame when drawn
