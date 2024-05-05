@@ -7,7 +7,7 @@ from modules.state_machine import State
 
 # Setup the environment by appending the current directory to the system path for asset access.
 
-#Const Variablee ...
+#Const Variables ...
 SCREEN = (1600, 1000)
 import pytmx
 from pyscroll.orthographic import BufferedRenderer
