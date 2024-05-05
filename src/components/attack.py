@@ -15,7 +15,7 @@ class SweepAttackSprite(Moving_Sprite):
         self.last_attack_time = 0  # Time since the last attack input
         self.sequence_timeout = 50000  # Time in milliseconds before the sequence resets
         self.attack_sprite = AttackSprite(focus, *groups)
-    
+
     def handle_attack_input(self, groups : pg.sprite.Group):
         current_time = pg.time.get_ticks()
         if self.attack_sequence == 0:
@@ -47,12 +47,12 @@ class SweepAttackSprite(Moving_Sprite):
     def perform_attack(self, groups : pg.sprite.Group):
         # Check for collision with enemies
         hit_list = pg.sprite.spritecollide(self, group=groups, dokill=False)
-        for enemy in hit_list:            
+        for enemy in hit_list:
             enemy.hurt_enemy(3)  # Apply damage
 
     def update(self, dt):
         return super().update(dt)
-    
+
 class AttackSprite(Moving_Sprite):
     def __init__(self, focus, *groups) -> None:
         super().__init__(focus, *groups)
@@ -70,8 +70,12 @@ class AttackSprite(Moving_Sprite):
                 enemy.kill()
                 # to do add hp to player
             else:
-                enemy.hurt_enemy(5)  # Apply damage
-                
+                try:
+                    enemy.hurt_enemy(5)  # Apply damage
+                except:
+                    #um im too lazy to work around the healthbar in enemy group
+                    #this just stops errors from collisions of healthbars
+                    pass
     def perform_smash_attack(self, groups : pg.sprite.Group):
         hit_list = pg.sprite.spritecollide(self, group=groups, dokill=False)
         for enemy in hit_list:

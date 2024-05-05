@@ -1,9 +1,8 @@
 from typing import Any
 import pygame as pg
 from pygame.math import Vector2
-from components.player import Player
 from components.particles import Particles
-from settings import Settings
+
 '''
   --- Enemy class ---
   This class is responsible for controlling everything about the enemies.
@@ -18,9 +17,8 @@ from settings import Settings
 
 
 class Enemy(pg.sprite.Sprite):
-  def __init__(self, player : Player, pos, surf : pg.Surface, health, *groups):
+  def __init__(self, player, pos, surf : pg.Surface, health, *groups):
     super().__init__(*groups)
-    settings = Settings()
     self.size = Vector2(40, 40)
     #import, load, and convert image to Surface, then scale it to 40x40
     self.image = surf
