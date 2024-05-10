@@ -1,5 +1,4 @@
 import pygame
-from pygame import Vector2
 import sys
 import os
 from pyscroll.data import TiledMapData
@@ -13,14 +12,18 @@ import pytmx
 from pyscroll.orthographic import BufferedRenderer
 from pyscroll.group import PyscrollGroup
 from settings import SCREEN
+from random import randint
 
 current_dir = os.path.dirname(os.path.dirname(__file__))
 uitImagePath = os.path.join(current_dir,"[level tester]", "trial_blue", "unbound_blue.tmx")
 map_path = uitImagePath
 
 
+
+#this should be moved else where
 class MapState(State):
-    def __init__(self, data, walls):
+    def __init__(self, data, walls, interactable, player, enemy_grp):
+
         self.map_layer : BufferedRenderer = BufferedRenderer(
             data = data,
             size=(SCREEN[0], SCREEN[1])
@@ -28,7 +31,14 @@ class MapState(State):
         self.map_layer.zoom = 2.5
         self.group : PyscrollGroup = PyscrollGroup(map_layer=self.map_layer, default_layer=2)
 
+        self.player = player
+        self.enemy_grp = enemy_grp
         self.walls = walls
+        self.interactable = interactable
+
+
+        self.group.add(self.player)
+        self.group.add(self.enemy_grp)
 
     def on_draw(self, surface, center):
         self.group.center(value=center)
@@ -54,7 +64,6 @@ class Settings():
     self.frog_left  = os.path.join(current_dir, "assets", "player_assets", "left.png")
     self.frog_up  = os.path.join(current_dir, "assets", "player_assets", "up.png")
     self.frog_down  = os.path.join(current_dir, "assets", "player_assets", "down.png")
-
     self.src = current_dir
 
 
@@ -78,16 +87,20 @@ class Settings():
 
 #Caches the map into pygame surfaces...
 
-
 class MapSettings():
     def __init__(self):
         self.layout = [1, 1, 1]
         self.py_surf = pytmx.load_pygame(map_path)
         #represent where the player is in the self.layout
+        from components.player import Player
+        self.player = Player((400, 300))
+        self.settings = Settings()
+        self.enemy_grp = pygame.sprite.Group()
+
         self.pos : int = 0
         self.walls = []
+        self.interactabe = []
         self.maps = {}
-
         self.load_map("base", map_path)
 
     def load_all_maps(self):
@@ -96,155 +109,34 @@ class MapSettings():
         return NotImplemented
 
     def load_map(self, name, filename) -> None:
+        from components.enemy import Enemy, HealthBar
+
         surf = pytmx.load_pygame(filename)
-        walls = []
 
         for layer in surf:
+            if layer.name == "spawning_spaces":
+                for obj in layer:
+                    if obj[2] != 0:
+                        #1/4 spawn rate
+                        if randint(0, 4) == 0:
+                            HealthBar(Enemy(self.player, (obj[0] * 16, obj[1] * 16), self.settings.enemy_sprite['fly'].convert_alpha(), 20, self.enemy_grp), self.enemy_grp)
+
+            if layer.name == "interactables":
+                for obj in layer:
+                    if obj[2] != 0:
+                        self.interactabe.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
+
+
             if layer.name == "wall_collision":
                 for obj in layer:
-                    print(obj)
                     if obj[2] != 0:
-                        walls.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
-
-        self.walls = walls
+                        self.walls.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
 
         self.maps = {
-            name : MapState(TiledMapData(surf), walls)
+            name : MapState(TiledMapData(surf), self.walls, self.interactabe, self.player, self.enemy_grp)
         }
 
 
 def init_screen(width: int, height: int) -> pygame.Surface:
     screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
     return screen
-
-
-# class Player(pygame.sprite.Sprite):
-
-#     def __init__(self, pos, *groups):
-#         super().__init__(*groups)
-#         self.image = pygame.Surface((10, 10))
-#         self.image.fill(pygame.Color('dodgerblue1'))
-#         self.rect = self.image.get_rect(center=pos)
-#         self.pos = Vector2(pos)
-#         self.vel = Vector2(0, 0)
-#         self.speed = 5
-#         self.attack : bool = False
-#         self.origin = Vector2(1680 // 2, 1080 //2)
-
-#         self._old_position = None
-#         self.feet = pygame.Rect(self.pos.x, self.pos.y, self.rect.width * 0.5, 8)
-
-#     def handle_event(self, event, dt):
-#         #Handles player movement
-#         if event.type == pygame.KEYDOWN:
-#             if event.key == pygame.K_d:
-#                 self.vel.x = self.speed * dt
-#             elif event.key == pygame.K_a:
-#                 self.vel.x = -self.speed * dt
-#             elif event.key == pygame.K_w:
-#                 self.vel.y = -self.speed * dt
-#             elif event.key == pygame.K_s:
-#                 self.vel.y = self.speed * dt
-#             elif event.key == pygame.K_SPACE:
-#                 self.attack = True
-
-#         try:
-#             self.vel = self.vel.normalize() * self.speed
-#         except:
-#             pass
-
-#     def get_attack_rect(self):
-#         return pygame.rect.Rect(
-#                 self.pos.x,
-#                 self.pos.y,
-#                 self.image.get_width(),
-#                 self.image.get_height()
-#               )
-#     # Update player's rectangle position
-#     def move_back(self, dt: float) -> None:
-#         """
-#         If called after an update, the sprite can move back
-
-#         """
-#         self.pos = self._old_position
-#         self.rect.center = self.pos
-#         self.feet.midbottom = self.rect.midbottom
-
-#     def update(self, dt):
-#     # Move the player.
-#         self._old_position = self.pos[:]
-#         self.pos += self.vel
-#         self.rect.center = self.pos
-#         self.feet.midbottom = self.rect.midbottom
-
-
-# class Camera(BufferedRenderer):
-#     def __init__(self, focus, data, size):
-#         super().__init__(data=data, size=size, clamp_camera=True, zoom=2.5)
-#                     #focus/lock on player
-#         self.focus : Player = focus
-#         self.view : pygame.Surface = pygame.display.set_mode((1680, 1080))
-#         self.origin = Vector2(1680 // 2 , 1080 //2)
-#         self.viewP = self.origin.copy()
-
-#     def viewpoint(self) -> pygame.Surface:
-#         pass
-
-#     def viewpointPosition(self):
-#         # Calculate the difference between the player and the center of the screen
-#         heading = self.focus.pos - self.origin
-#         # Move the camera gradually towards the player
-#         self.origin += heading * 0.05
-#         return -self.origin + self.focus.pos
-
-
-# if __name__ == "__main__":
-#     clock = pygame.time.Clock()
-
-#     pygame.init()
-#     pygame.font.init()
-#     screen = init_screen(SCREEN[0], SCREEN[1])
-#     map_settings = MapSettings()
-#     all_sprites = pygame.sprite.Group()
-#     player = Player((400, 300), all_sprites)
-
-#     camera = Camera(
-#        focus=player,
-#        data=TiledMapData(map_settings.py_surf),
-#        size=(1680, 1080)
-#     )
-
-#     running = True
-#     player.pos = (176, 319.5)
-
-#     map_machine = Machine()
-#     map_machine.current = map_settings.maps.get('base')
-#     map_machine.current.group.add(player)
-
-#     import time
-#     previous_time = time.time()
-
-#     while running:
-#         dt = time.time() - previous_time
-#         previous_time = time.time()
-
-#         for event in pygame.event.get():
-#             player.handle_event(event=event, dt=dt)
-#             if event.type == pygame.QUIT:
-#                 running = False
-
-#         map_machine.current.on_update(dt)
-#         for sprite in map_machine.current.group.sprites():
-#             if sprite.feet.collidelist(map_settings.walls) > -1:
-#                 sprite.move_back(dt)
-
-#         view = -camera.viewpointPosition() + player.pos
-#         #camera viewpoint doesnt align with the player position
-
-#         # camera._x_offset +=
-#         map_machine.current.on_draw(screen, view)
-
-#         pygame.draw.circle(screen, (255, 255, 255), (0, 0), 10)
-#         pygame.display.flip()
-#         clock.tick(60)
-#     pygame.quit()
