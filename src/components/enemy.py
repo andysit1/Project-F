@@ -138,6 +138,9 @@ class HealthBar(pg.sprite.Sprite):
       self.image = pg.transform.scale(self.image, [health_to_maxhealth_ratio, self.size_bar_y])
     except:
       pass
+    
+  def hurt_enemy(self, damage):
+    self.health -= damage
 
 
   def update(self, dt):
