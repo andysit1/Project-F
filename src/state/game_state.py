@@ -4,7 +4,8 @@ from pygame.math import Vector2
 from modules.state_machine import State, Machine
 from components.player import Player
 from components.enemy import Enemy, HealthBar
-from components.ui import Interface, Dialogue
+from components.ui import Interface
+from components.dialogue import Dialogue
 from components.camera import Camera
 from settings import Settings, MapSettings
 from components.particles import ParticleGenerator

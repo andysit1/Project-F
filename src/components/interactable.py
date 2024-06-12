@@ -7,7 +7,7 @@
 #the difference is the sprite, radius to interact, and the result from the interaction
 
 import pygame as pg
-
+from .ui import DialogueState
 
 
 class Interactable(pg.sprite.Sprite):
@@ -38,3 +38,6 @@ class Interactable(pg.sprite.Sprite):
     pass
 
 
+class Interactable_Dialogueable(DialogueState):
+  def __init__(self):
+    super().__init__()
