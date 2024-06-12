@@ -10,6 +10,7 @@ from settings import Settings, MapSettings
 from components.particles import ParticleGenerator
 from components.attack import AttackSprite
 from components.attack import SweepAttackSprite
+from modules.state_machine import Machine
 
 '''
   --- GameState class ---
@@ -47,10 +48,8 @@ class GameState(State):
     self.attack_sprite_test = AttackSprite(self.player, self.map_machine.current.group)
     self.attack_sweep = SweepAttackSprite(self.player, self.map_machine.current.group)
 
-
-
-
     self.dialogue = Dialogue()
+    self.dialogue_machine = Machine()
   #we need a function to make a new tile map to swap all the values
 
 
@@ -65,6 +64,8 @@ class GameState(State):
     self.ui.on_draw(self.engine.surface)
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
 
+    if self.dialogue_machine.current:
+      self.dialogue.draw(self.engine.surface, "This is just an example text to use with gradual typing.")
 
 
   # Handles events (ie. key presses)
@@ -79,8 +80,7 @@ class GameState(State):
         self.attack_sweep.handle_attack_input(self.enemy_group)
       elif event.key == pg.K_0:
         print('trigger')
-        
-        self.dialogue.draw(self.engine.surface, "This is just an example text to use with gradual typing.")
+        self.dialogue_machine.current = True
 
 
   # Updates relevant game state information
