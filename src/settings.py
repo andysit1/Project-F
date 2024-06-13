@@ -119,7 +119,7 @@ class MapSettings():
                     if obj[2] != 0:
                         #1/4 spawn rate
                         if randint(0, 4) == 0:
-                            HealthBar(Enemy(self.player, (obj[0] * 16, obj[1] * 16), self.settings.enemy_sprite['fly'].convert_alpha(), 20, self.enemy_grp), self.enemy_grp)
+                            HealthBar(Enemy(self.player, (obj[0] * 16, obj[1] * 16), self.settings.enemy_sprite['fly'].convert_alpha(), 30, self.enemy_grp), self.enemy_grp)
 
             if layer.name == "interactables":
                 for obj in layer:

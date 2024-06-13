@@ -1,4 +1,3 @@
-
 import pygame as pg
 from settings import Settings
 
@@ -39,6 +38,7 @@ class SweepAttackSprite(Moving_Sprite):
                 self.reset_sequence()
             else:
                 self.reset_sequence()
+                
     def reset_sequence(self):
         self.attack_sequence = 0
         self.last_attack_time = 0
@@ -48,7 +48,7 @@ class SweepAttackSprite(Moving_Sprite):
         # Check for collision with enemies
         hit_list = pg.sprite.spritecollide(self, group=groups, dokill=False)
         for enemy in hit_list:
-            enemy.hurt_enemy(3)  # Apply damage
+            enemy.hurt_enemy(5)  # Apply damage
 
     def update(self, dt):
         return super().update(dt)
@@ -62,7 +62,7 @@ class AttackSprite(Moving_Sprite):
         self.vertical_surface = pg.Surface([self.attack_height, self.attack_width])
 
 
-    def perform_attack(self, groups : pg.sprite.Group):
+    def perform_tongue(self, groups : pg.sprite.Group):
         # Check for collision with enemies
         hit_list = pg.sprite.spritecollide(self, group=groups, dokill=False)
         for enemy in hit_list:
@@ -71,7 +71,7 @@ class AttackSprite(Moving_Sprite):
                 # TODO: add hp to player
             else:
                 try:
-                    enemy.hurt_enemy(5)  # Apply damage
+                    enemy.hurt_enemy(3)  # Apply damage
                 except:
                     #um im too lazy to work around the healthbar in enemy group
                     #this just stops errors from collisions of healthbars
@@ -79,7 +79,7 @@ class AttackSprite(Moving_Sprite):
     def perform_smash_attack(self, groups : pg.sprite.Group):
         hit_list = pg.sprite.spritecollide(self, group=groups, dokill=False)
         for enemy in hit_list:
-            enemy.hurt_enemy(25)
+            enemy.hurt_enemy(13)
 
     def update(self, dt):
         return super().update(dt)
