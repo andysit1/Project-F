@@ -1,0 +1,35 @@
+{
+  "node_type":"input",
+  "dialogue":{
+     "node_type":"read",
+     "id":1,
+     "text":"Hello, how are you?",
+     "speaker":"Alice"
+  },
+  "child_dialogue":[
+     {
+        "node_type":"read",
+        "id":2,
+        "text":"I'm good, thanks! How about you?",
+        "speaker":"Bob"
+     },
+     {
+        "node_type":"read",
+        "id":3,
+        "text":"I'm great cause I'm coding today",
+        "speaker":"Alice"
+     },
+     {
+        "node_type":"input",
+        "dialogue":{
+           "node_type":"read",
+           "id":4,
+           "text":"let's go down a level",
+           "speaker":"Alice"
+        },
+        "child_dialogue":[
+
+        ]
+     }
+  ]
+}
