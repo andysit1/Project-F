@@ -7,8 +7,8 @@ from modules.sprite_base import Moving_Sprite
 class SweepAttackSprite(Moving_Sprite):
     def __init__(self, focus, *groups) -> None:
         super().__init__(focus, *groups)
-        self.attack_width = 30
-        self.attack_height = 60
+        self.attack_width = 17
+        self.attack_height = 45
         self.horizontal_surface = pg.Surface([self.attack_width, self.attack_height])
         self.vertical_surface = pg.Surface([self.attack_height, self.attack_width])
         self.attack_sequence = 0  # Track the current attack sequence stage
@@ -56,8 +56,8 @@ class SweepAttackSprite(Moving_Sprite):
 class AttackSprite(Moving_Sprite):
     def __init__(self, focus, *groups) -> None:
         super().__init__(focus, *groups)
-        self.attack_width = 45
-        self.attack_height = 10
+        self.attack_width = 25
+        self.attack_height = 7
         self.horizontal_surface = pg.Surface([self.attack_width, self.attack_height])
         self.vertical_surface = pg.Surface([self.attack_height, self.attack_width])
 
@@ -68,7 +68,7 @@ class AttackSprite(Moving_Sprite):
         for enemy in hit_list:
             if enemy.swallowable:
                 enemy.kill()
-                # to do add hp to player
+                # TODO: add hp to player
             else:
                 try:
                     enemy.hurt_enemy(5)  # Apply damage

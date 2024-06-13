@@ -29,7 +29,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 300
+        self.speed = 100
         self.dash_timer : float = 0.0   #in seconds
         self.dash_time_length_seconds : float = 0.3 #in seconds
         self.dash_time_cooldown : float = 0.2
@@ -43,13 +43,11 @@ class Player(pg.sprite.Sprite):
         #feet variable is used for wall collisions
         self.feet = pg.Rect(self.pos.x, self.pos.y, self.rect.width * 0.5, 8)
         self._old_position = None
+        
     # Handles player actions based on key presses
     def handle_event(self, event, dt):
 
         self.player_movement(event, dt) # Moves the player
-        #WIP -- for attack --
-        #if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-            # print("space")
 
         #dashing
         if event.type == pg.KEYDOWN and event.key == pg.K_z:

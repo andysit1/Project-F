@@ -28,7 +28,7 @@ class MapState(State):
             data = data,
             size=(SCREEN[0], SCREEN[1])
         )
-        self.map_layer.zoom = 2.5
+        self.map_layer.zoom = 5
         self.group : PyscrollGroup = PyscrollGroup(map_layer=self.map_layer, default_layer=2)
 
         self.player = player
@@ -68,7 +68,7 @@ class Settings():
 
 
     #dict representing frog sprites
-    self.player_size = (20, 20)
+    self.player_size = (16, 16)
     self.ui_player_size = (70, 70)
     self.character_sprite = {
       'ui' : pygame.transform.scale(pygame.image.load(self.frog_right), self.ui_player_size),
@@ -79,7 +79,7 @@ class Settings():
     }
 
     #dict representing enemy sprites
-    self.enemy_size = (40, 40)
+    self.enemy_size = (16, 16)
     self.enemy_sprite = {
       'fly' : pygame.transform.scale(pygame.image.load("{}/assets/".format(self.src) + 'fly' + ".png"), self.enemy_size),
       'wasp' : pygame.transform.scale(pygame.image.load("{}/assets/".format(self.src) + 'wasp' + ".png"), self.enemy_size),
