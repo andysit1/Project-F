@@ -47,10 +47,8 @@ class GameState(State):
     self.attack_sprite_test = AttackSprite(self.player, self.map_machine.current.group)
     self.attack_sweep = SweepAttackSprite(self.player, self.map_machine.current.group)
 
-
-
-
     self.dialogue = Dialogue()
+    
   #we need a function to make a new tile map to swap all the values
 
 
