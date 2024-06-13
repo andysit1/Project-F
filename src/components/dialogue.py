@@ -10,14 +10,31 @@ parent_dir = os.path.dirname(os.path.dirname(__file__))
 sys.path.append(parent_dir)
 
 
-from modules.state_machine import Machine
+from modules.state_machine import Machine, DisplayEngine
 #Dialogue Specific Settings
 TEXT_SPEED = 0.03
 
+class _DialogueStateMachine(Machine):
+  def __init__(self):
+    self.current : DialogueState = None
+    self.next_state : DialogueState = None
+
+
+  def update(self):
+    try:
+      if self.next_state:
+        self.current = self.next_state
+        self.next_state = None
+        print("Swapped")
+    except:
+      print("ERROR SWITCHING")
+      pass
+
+
 #represents Dialogue surface drawing logic int he game...
 class Dialogue():
-  def __init__(self):
-    self.text = "This is just an example text to use with gradual typing."
+  def __init__(self, text : str = "This is just an example text to use with gradual typing."):
+    self.text = text
     self.surf = pg.Surface((700,200), pg.SRCALPHA)
     self.show_textbox = False
     self.typing = False
@@ -34,6 +51,12 @@ class Dialogue():
     self.surf.fill((0, 0, 255, 100))
     pg.draw.rect(self.surf, "Black", self.border_rect, 6)
 
+  @property
+  def is_done(self):
+    if self.index == len(self.text) - 1:
+      return True
+    else:
+      return False
 
   def draw(self, surface):
     self.draw_border()
@@ -47,15 +70,17 @@ class Dialogue():
         surface.blit(self.surf, self.textbox_rect)
         pg.display.flip()
     else:
-      # draw the waiting state.. implementing later..
-      pass
+        rendered_text = self.FONT.render(self.text, 1, 'White')
+        text_rect = rendered_text.get_rect(topleft=(20, 90))
+        self.surf.blit(rendered_text, text_rect)
+        surface.blit(self.surf, self.textbox_rect)
+        pg.display.flip()
 
   def update(self, delta):
     self.time_delay -= delta * 1
-    print(self.time_delay)
     if self.index < len(self.text) - 1 and self.time_delay < 0:
-      self.index += 1
       self.rendering += self.text[self.index]
+      self.index += 1
 
       self.time_delay = TEXT_SPEED
 
@@ -64,22 +89,16 @@ class Dialogue():
 #tree ds
 #has current display text and next options (Tree)
 class DialogueState(Tree):
-  def __init__(self):
+  def __init__(self, text : str = None):
     super().__init__()
-    self.text : str = None
+    self.done : bool = False
+    self.dialogue : Dialogue = Dialogue(text)
     self.txt_graph = None
 
-
-class UserInputDialogue(DialogueState):
-  def __init__(self):
-    super().__init__()
-
-  def get_options(self) -> list:
-    return self.children
-
-  def picked_option(self, identifier):
-    return self.subtree(identifier=identifier)
-
+  #kinda reundant but we can remove later..
+  @property
+  def is_done(self):
+    return self.dialogue.is_done
 
 #queue ds
 class DialogueStateMachcine():
@@ -90,30 +109,69 @@ class DialogueStateMachcine():
     self.q.put(dialogue_state)
 
   def get_dialogue(self):
-    return self.q.get()
+    try:
+      print(self.q.qsize())
+      if self.q.qsize() != 0:
+        temp_state = self.q.get()
+        print(temp_state, temp_state.dialogue.text)
+        return temp_state
+      else:
+        print("q is empty")
+    except:
+      print("Error...")
+
+    return None
+
 
   @property
   def is_q_empty(self):
     return self.q.empty
 
-
 class DialogueDisplayEngine():
-  def __init__(self) -> None:
-    self.engine = None
+  def __init__(self, engine) -> None:
+    self.engine : DisplayEngine = engine
     self.dialogue_machine = DialogueStateMachcine()
-    self.machine = Machine()
+    self.machine = _DialogueStateMachine()
 
+  def set_current(self, state : DialogueState):
+    self.machine.current = state
 
-  #prequeues the next state given
-  def update(self):
+  def set_next(self, state : DialogueState):
+    self.machine.next_state = state
+
+  def update(self, delta):
+    #updates the timers for dialogue
+    if self.machine.current:
+      self.machine.current.dialogue.update(delta)
+
+    if not self.dialogue_machine.q.empty():
+      #if non and we have dialogue then we want to set/start the queue to read...
+      if self.machine.current == None:
+        tmp_dialogue = self.dialogue_machine.get_dialogue()
+        try:
+          print("There is dialogue...", tmp_dialogue.dialogue.text)
+        except:
+          pass
+        self.set_next(tmp_dialogue)
+      else:
+        #check to see if the text is done so we can swap to new screen
+        try:
+          if self.machine.current.dialogue.is_done:
+            tmp_dialogue = self.dialogue_machine.get_dialogue()
+            if tmp_dialogue:
+              self.set_next(tmp_dialogue)
+        except:
+          pass
+        #if we have something on screen and
+
     self.machine.update()
 
-    if not self.dialogue_machine.is_q_empty():
-      next_dialogue_state = self.dialogue_machine.get_dialogue()
-      self.machine.next_state = next_dialogue_state
-
   def draw(self):
-    pass
+    try:
+      if self.machine.current.dialogue:
+        self.machine.current.dialogue.draw(self.engine.surface)
+    except:
+      pass
 
 
 if __name__ == "__main__":
@@ -145,21 +203,14 @@ if __name__ == "__main__":
   d_state1.create_node("Hello", "root")
   d_state1.create_node("Do you want to travel", "1", parent="root")
 
-  d_state1_1 = UserInputDialogue()
+  d_state1_1 = DialogueState()
   d_state1_1.create_node("Yes", "yes")
   d_state1_1.create_node("Go to town", "1-1", "yes")
   d_state1_1.create_node("Go to house", "1-2", "yes")
   d_state1_1.create_node("Go to gym", "1-3", "yes")
 
 
-  q.put(item=d_state1)
-  q.put(item=d_state1_1)
-
-  while q.not_empty:
-    tmp_tree = q.get()
-    print(tmp_tree.show(stdout=False))
-
-
+  # engine.draw()
 
 '''"
 BRAINSTORM
