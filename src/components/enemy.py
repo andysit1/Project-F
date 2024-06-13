@@ -19,13 +19,13 @@ from components.particles import Particles
 class Enemy(pg.sprite.Sprite):
   def __init__(self, player, pos, surf : pg.Surface, health, *groups):
     super().__init__(*groups)
-    self.size = Vector2(40, 40)
+    self.size = Vector2(10, 10)
     #import, load, and convert image to Surface, then scale it to 40x40
     self.image = surf
     self.rect = self.image.get_rect(center=pos)
     self.pos = Vector2(pos)
     self.vel = Vector2(0, 0)
-    self.speed = 40
+    self.speed = 30
     self.max_health = health
     self.health = health
     self.player = player
@@ -88,8 +88,8 @@ class HealthBar(pg.sprite.Sprite):
 
     #healthbar var variables
     self.feet = focus.feet
-    self.size_bar_x = focus.size.x + 4
-    self.size_bar_y = 7
+    self.size_bar_x = focus.size.x + 1
+    self.size_bar_y = 2
     self.is_visible = False
 
     #entity variables...

@@ -29,7 +29,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect(center=pos)
         self.pos = Vector2(pos)
         self.vel = Vector2(0, 0)
-        self.speed = 300
+        self.speed = 100
         self.dash_timer : float = 0.0   #in seconds
         self.dash_time_length_seconds : float = 0.3 #in seconds
         self.dash_time_cooldown : float = 0.2
@@ -43,13 +43,11 @@ class Player(pg.sprite.Sprite):
         #feet variable is used for wall collisions
         self.feet = pg.Rect(self.pos.x, self.pos.y, self.rect.width * 0.5, 8)
         self._old_position = None
+        
     # Handles player actions based on key presses
     def handle_event(self, event, dt):
 
         self.player_movement(event, dt) # Moves the player
-        #WIP -- for attack --
-        #if event.type == pg.KEYDOWN and event.key == pg.K_SPACE:
-            # print("space")
 
         #dashing
         if event.type == pg.KEYDOWN and event.key == pg.K_z:
@@ -66,34 +64,45 @@ class Player(pg.sprite.Sprite):
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_UP:
                 self.vel.y = -self.speed * dt
-                self.keypressed.append(self.up)
-                self.direction = "up"
+                self.keypressed.append("up")
             elif event.key == pg.K_DOWN:
                 self.vel.y = self.speed * dt
-                self.keypressed.append(self.down)
-                self.direction = "down"
+                self.keypressed.append("down")
             elif event.key == pg.K_RIGHT:
                 self.vel.x = self.speed * dt
-                self.keypressed.append(self.right)
-                self.direction = "right"
+                self.keypressed.append("right")
             elif event.key == pg.K_LEFT:
                 self.vel.x = -self.speed * dt
-                self.keypressed.append(self.left)
-                self.direction = "left"
+                self.keypressed.append("left")
         elif event.type == pg.KEYUP:
-            if event.key == pg.K_UP and self.vel.y < 0:
-                self.vel.y = 0
-                self.keypressed.remove(self.up)
-            elif event.key == pg.K_DOWN and self.vel.y > 0:
-                self.vel.y = 0
-                self.keypressed.remove(self.down)
-            elif event.key == pg.K_RIGHT and self.vel.x > 0:
-                self.vel.x = 0
-                self.keypressed.remove(self.right)
-            elif event.key == pg.K_LEFT and self.vel.x < 0:
-                self.vel.x = 0
-                self.keypressed.remove(self.left)
-
+            if event.key == pg.K_UP:
+                if self.vel.y < 0:
+                    self.vel.y = 0
+                try:
+                    self.keypressed.remove("up")
+                except:
+                    pass
+            elif event.key == pg.K_DOWN:
+                if self.vel.y > 0:
+                    self.vel.y = 0
+                try:
+                    self.keypressed.remove("down")
+                except:
+                    pass
+            elif event.key == pg.K_RIGHT:
+                if self.vel.x > 0:
+                    self.vel.x = 0
+                try:
+                    self.keypressed.remove("right")
+                except:
+                    pass
+            elif event.key == pg.K_LEFT:
+                if self.vel.x < 0:
+                    self.vel.x = 0
+                try:
+                    self.keypressed.remove("left")
+                except:
+                    pass
         # Normalizes velocity vector in the diagonals (as cant normalize a vector of 0, which happens when not diagonal)
         try:
             # Multiplies direction vector by speed, and time between frames, rounded to 3 decimal places
@@ -125,7 +134,15 @@ class Player(pg.sprite.Sprite):
 
         # Changes player image based on direction
         if (self.vel.length() > 0):
-            self.image = self.keypressed[0]
+            self.direction = self.keypressed[0]
+            if self.direction == "up":
+                self.image = self.up
+            elif self.direction == "down": 
+                self.image = self.down
+            elif self.direction == "right":
+                self.image = self.right
+            elif self.direction == "left":
+                self.image = self.left
         else:
             self.keypressed.clear()
 

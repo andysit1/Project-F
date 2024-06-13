@@ -74,9 +74,9 @@ class GameState(State):
     # If space is pressed, player attacks enemies
     if event.type == pg.KEYDOWN:
       if event.key == pg.K_SPACE:
-        self.attack_sprite_test.perform_attack(self.enemy_group)
-      elif event.key == pg.K_c:
         self.attack_sweep.handle_attack_input(self.enemy_group)
+      elif event.key == pg.K_c:
+        self.attack_sprite_test.perform_tongue(self.enemy_group)
       elif event.key == pg.K_0:
         print('trigger')
         
