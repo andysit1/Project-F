@@ -50,7 +50,19 @@ class GameState(State):
     self.attack_sweep = SweepAttackSprite(self.player, self.map_machine.current.group)
 
     self.dialogue = Dialogue()
-  #we need a function to make a new tile map to swap all the values
+    self.dialogue_machine = Machine()
+
+
+    self.dialogue_test_state = DialogueState("This is just an example text to use with gradual typing.")
+    self.dialogue_test_state.create_node("Hello", "root")
+    self.dialogue_test_state.create_node("Go to town", "1-1", "root")
+    self.dialogue_test_state.create_node("Go to house", "1-2", "root")
+
+    self.dialogue_test_state1 = DialogueState("This is just an another example to use with gradual typing.")
+    self.dialogue_test_state1.create_node("Hello", "root")
+    self.dialogue_test_state1.create_node("Go to town", "1-1", "root")
+    self.dialogue_test_state1.create_node("Go to house", "1-2", "root")
+    self.dialogue_engine : DialogueDisplayEngine = DialogueDisplayEngine(self.engine)
 
 
   # What is done on each frame when drawn
@@ -82,9 +94,8 @@ class GameState(State):
         self.attack_sweep.handle_attack_input(self.enemy_group)
       elif event.key == pg.K_0:
         print('trigger')
-
         self.dialogue.draw(self.engine.surface, "This is just an example text to use with gradual typing.")
-
+    
 
   # Updates relevant game state information
   def on_update(self, delta):
