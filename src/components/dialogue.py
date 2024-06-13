@@ -25,7 +25,6 @@ class _DialogueStateMachine(Machine):
       if self.next_state:
         self.current = self.next_state
         self.next_state = None
-        print("Swapped")
     except:
       print("ERROR SWITCHING")
       pass
@@ -110,10 +109,9 @@ class DialogueStateMachcine():
 
   def get_dialogue(self):
     try:
-      print(self.q.qsize())
       if self.q.qsize() != 0:
         temp_state = self.q.get()
-        print(temp_state, temp_state.dialogue.text)
+        # print(temp_state, temp_state.dialogue.text)
         return temp_state
       else:
         print("q is empty")
@@ -148,10 +146,6 @@ class DialogueDisplayEngine():
       #if non and we have dialogue then we want to set/start the queue to read...
       if self.machine.current == None:
         tmp_dialogue = self.dialogue_machine.get_dialogue()
-        try:
-          print("There is dialogue...", tmp_dialogue.dialogue.text)
-        except:
-          pass
         self.set_next(tmp_dialogue)
       else:
         #check to see if the text is done so we can swap to new screen
