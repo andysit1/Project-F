@@ -18,8 +18,6 @@ current_dir = os.path.dirname(os.path.dirname(__file__))
 uitImagePath = os.path.join(current_dir,"[level tester]", "trial_blue", "unbound_blue.tmx")
 map_path = uitImagePath
 
-
-
 #this should be moved else where
 class MapState(State):
     def __init__(self, data, walls, interactable, player, enemy_grp):

@@ -4,12 +4,14 @@ from pygame.math import Vector2
 from modules.state_machine import State, Machine
 from components.player import Player
 from components.enemy import Enemy, HealthBar
-from components.ui import Interface, Dialogue
+from components.ui import Interface
+from components.dialogue import Dialogue, DialogueDisplayEngine, DialogueState
 from components.camera import Camera
 from settings import Settings, MapSettings
 from components.particles import ParticleGenerator
 from components.attack import AttackSprite
 from components.attack import SweepAttackSprite
+from modules.state_machine import Machine
 
 '''
   --- GameState class ---
@@ -47,10 +49,23 @@ class GameState(State):
     self.attack_sprite_test = AttackSprite(self.player, self.map_machine.current.group)
     self.attack_sweep = SweepAttackSprite(self.player, self.map_machine.current.group)
 
-
-
-
     self.dialogue = Dialogue()
+    self.dialogue_machine = Machine()
+
+
+    self.dialogue_test_state = DialogueState("This is just an example text to use with gradual typing.")
+    self.dialogue_test_state.create_node("Hello", "root")
+    self.dialogue_test_state.create_node("Go to town", "1-1", "root")
+    self.dialogue_test_state.create_node("Go to house", "1-2", "root")
+
+    self.dialogue_test_state1 = DialogueState("This is just an another example to use with gradual typing.")
+    self.dialogue_test_state1.create_node("Hello", "root")
+    self.dialogue_test_state1.create_node("Go to town", "1-1", "root")
+    self.dialogue_test_state1.create_node("Go to house", "1-2", "root")
+    self.dialogue_engine : DialogueDisplayEngine = DialogueDisplayEngine(self.engine)
+
+
+
   #we need a function to make a new tile map to swap all the values
 
 
@@ -65,6 +80,10 @@ class GameState(State):
     self.ui.on_draw(self.engine.surface)
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
 
+    if self.dialogue_machine.current:
+      self.dialogue.draw(self.engine.surface)
+
+    self.dialogue_engine.draw()
 
 
   # Handles events (ie. key presses)
@@ -78,10 +97,13 @@ class GameState(State):
       elif event.key == pg.K_c:
         self.attack_sprite_test.perform_tongue(self.enemy_group)
       elif event.key == pg.K_0:
-        print('trigger')
-        
-        self.dialogue.draw(self.engine.surface, "This is just an example text to use with gradual typing.")
+        self.dialogue_machine.current = True
+      elif event.key == pg.K_9:
+        self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state)
+        self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state1)
 
+      elif event.key == pg.K_ESCAPE:
+        self.dialogue_engine.set_current(None)
 
   # Updates relevant game state information
   def on_update(self, delta):
@@ -95,6 +117,14 @@ class GameState(State):
       try:
         if sprite.feet.collidelist(self.map_machine.current.walls) > -1:
             sprite.move_back(delta)
+
+        if sprite.feet.collidelist(self.map_machine.current.interactable) > -1:
+            self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state)
       except:
         pass
+
     self.ui.on_update()
+    if self.dialogue_machine.current:
+      self.dialogue.update(delta)
+
+    self.dialogue_engine.update(delta=delta)
