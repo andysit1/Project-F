@@ -66,7 +66,7 @@ class GameState(State):
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
 
     if self.dialogue_machine.current:
-      self.dialogue.draw(self.engine.surface, "This is just an example text to use with gradual typing.")
+      self.dialogue.draw(self.engine.surface)
 
 
   # Handles events (ie. key presses)
@@ -98,4 +98,7 @@ class GameState(State):
             sprite.move_back(delta)
       except:
         pass
+
     self.ui.on_update()
+    if self.dialogue_machine.current:
+      self.dialogue.update(delta)
