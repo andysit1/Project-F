@@ -65,6 +65,10 @@ class GameState(State):
     self.dialogue_engine : DialogueDisplayEngine = DialogueDisplayEngine(self.engine)
 
 
+
+  #we need a function to make a new tile map to swap all the values
+
+
   # What is done on each frame when drawn
   def on_draw(self):
     #DRAWING CAMERA VIEW
@@ -93,9 +97,13 @@ class GameState(State):
       elif event.key == pg.K_c:
         self.attack_sweep.handle_attack_input(self.enemy_group)
       elif event.key == pg.K_0:
-        print('trigger')
-        self.dialogue.draw(self.engine.surface, "This is just an example text to use with gradual typing.")
-    
+        self.dialogue_machine.current = True
+      elif event.key == pg.K_9:
+        self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state)
+        self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state1)
+
+      elif event.key == pg.K_ESCAPE:
+        self.dialogue_engine.set_current(None)
 
   # Updates relevant game state information
   def on_update(self, delta):
