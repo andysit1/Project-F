@@ -10,6 +10,7 @@ from settings import Settings, MapSettings
 from components.particles import ParticleGenerator
 from components.attack import AttackSprite
 from components.attack import SweepAttackSprite
+from components.playerMap import PlayerMap
 
 '''
   --- GameState class ---
@@ -37,6 +38,8 @@ class GameState(State):
     self.map_machine = Machine()
     self.map_machine.current = self.map_settings.maps.get("base") #set the first state as base
 
+    self.player_map = PlayerMap(self.map_settings.get_map_display())
+
     self.player = self.map_machine.current.player
     self.enemy_group = self.map_machine.current.enemy_grp
 
@@ -54,6 +57,12 @@ class GameState(State):
   #we need a function to make a new tile map to swap all the values
 
 
+  ''' implement later when we have an area-switching system
+  # whatever area we are in, return corresponding map path
+  def get_map_display(self):
+    return self.map_display_path
+  '''
+
   # What is done on each frame when drawn
   def on_draw(self):
     #DRAWING CAMERA VIEW
@@ -65,7 +74,8 @@ class GameState(State):
     self.ui.on_draw(self.engine.surface)
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
 
-
+    # draw the map tint if the map is open
+    self.player_map.draw(self.engine.surface)
 
   # Handles events (ie. key presses)
   def on_event(self, event):
@@ -79,9 +89,10 @@ class GameState(State):
         self.attack_sweep.handle_attack_input(self.enemy_group)
       elif event.key == pg.K_0:
         print('trigger')
-        
         self.dialogue.draw(self.engine.surface, "This is just an example text to use with gradual typing.")
-
+      #player opens map menu with q
+      elif event.key == pg.K_q:
+        self.player_map.toggle_map()
 
   # Updates relevant game state information
   def on_update(self, delta):
