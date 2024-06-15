@@ -19,7 +19,7 @@ uitImagePath = os.path.join(current_dir,"[level tester]", "trial_blue", "unbound
 map_path = uitImagePath
 
 # directory to the player map
-player_map_path = os.path.join(current_dir, "[level tester]", "trial_blue", "trial_blue_map", "map_unbount_blue.tmx")
+player_map_path = os.path.join(current_dir, "[level tester]", "trial_blue", "trial_blue_map", "map_unbound_blue.tmx")
 
 
 #this should be moved else where
@@ -110,9 +110,7 @@ class MapSettings():
         #for now we can ignore
         return NotImplemented
     
-    '''CHECK THIS OUT'''
     def get_map_display(self):
-        current_dir = os.path.dirname(os.path.dirname(__file__))
         return player_map_path
 
     def load_map(self, name, filename) -> None:
