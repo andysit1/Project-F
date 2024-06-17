@@ -38,6 +38,12 @@ class SweepAttackSprite(Moving_Sprite):
             else:
                 self.reset_sequence()
 
+    def perform_attack(self, groups : pg.sprite.Group):
+        # Check for collision with enemies
+        hit_list = pg.sprite.spritecollide(self, group=groups, dokill=False)
+        for enemy in hit_list:
+            enemy.hurt_enemy(5)  # Apply damage
+    
     def reset_sequence(self):
         self.attack_sequence = 0
         self.frames_since_last_attack = 0
