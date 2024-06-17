@@ -11,46 +11,40 @@ class SweepAttackSprite(Moving_Sprite):
         self.horizontal_surface = pg.Surface([self.attack_width, self.attack_height])
         self.vertical_surface = pg.Surface([self.attack_height, self.attack_width])
         self.attack_sequence = 0  # Track the current attack sequence stage
-        self.last_attack_time = 0  # Time since the last attack input
-        self.sequence_timeout = 50000  # Time in milliseconds before the sequence resets
+        self.frames_since_last_attack = 0  # Frames since the last attack input
+        self.sequence_timeout_frames = 720  # Frames before the sequence resets (5 seconds at 144 FPS)
         self.attack_sprite = AttackSprite(focus, *groups)
 
     def handle_attack_input(self, groups : pg.sprite.Group):
-        current_time = pg.time.get_ticks()
         if self.attack_sequence == 0:
             self.perform_attack(groups)
             self.attack_sequence = 1
-            self.last_attack_time = current_time
+            self.frames_since_last_attack = 0  # Reset frame counter
             print("Performed first attack.")
 
         elif self.attack_sequence == 1:
-            if current_time - self.last_attack_time < self.sequence_timeout:
+            if self.frames_since_last_attack < self.sequence_timeout_frames:
                 self.perform_attack(groups)
                 self.attack_sequence = 2
-                self.last_attack_time = current_time
+                self.frames_since_last_attack = 0  # Reset frame counter
                 print("Performed second attack.")
 
             else:
                 self.reset_sequence()
         elif self.attack_sequence == 2:
-            if current_time - self.last_attack_time < self.sequence_timeout:
+            if self.frames_since_last_attack < self.sequence_timeout_frames:
                 self.attack_sprite.perform_smash_attack(groups)
                 self.reset_sequence()
             else:
                 self.reset_sequence()
-                
+
     def reset_sequence(self):
         self.attack_sequence = 0
-        self.last_attack_time = 0
+        self.frames_since_last_attack = 0
         print("Attack sequence reset.")
 
-    def perform_attack(self, groups : pg.sprite.Group):
-        # Check for collision with enemies
-        hit_list = pg.sprite.spritecollide(self, group=groups, dokill=False)
-        for enemy in hit_list:
-            enemy.hurt_enemy(5)  # Apply damage
-
     def update(self, dt):
+        self.frames_since_last_attack += 1  # Increment frame counter each frame
         return super().update(dt)
 
 class AttackSprite(Moving_Sprite):
