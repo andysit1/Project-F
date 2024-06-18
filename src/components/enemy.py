@@ -17,7 +17,7 @@ from components.particles import Particles
 
 
 class Enemy(pg.sprite.Sprite):
-  def __init__(self, player, pos, surf : pg.Surface, health, *groups):
+  def __init__(self, player, pos, surf : pg.Surface, health, speed, *groups):
     super().__init__(*groups)
     self.size = Vector2(10, 10)
     #import, load, and convert image to Surface, then scale it to 40x40
@@ -25,7 +25,7 @@ class Enemy(pg.sprite.Sprite):
     self.rect = self.image.get_rect(center=pos)
     self.pos = Vector2(pos)
     self.vel = Vector2(0, 0)
-    self.speed = 30
+    self.speed = speed
     self.max_health = health
     self.health = health
     self.player = player
@@ -47,7 +47,7 @@ class Enemy(pg.sprite.Sprite):
       self.swallowable = True
 
     player_to_enemy_vector : pg.Vector2 = (self.player.pos - self.pos)
-    is_enemy_in_range_of_player = player_to_enemy_vector.magnitude() < 300
+    is_enemy_in_range_of_player = player_to_enemy_vector.magnitude() < 200
 
     if (is_enemy_in_range_of_player):
       self.vel = player_to_enemy_vector.normalize() * self.speed * dt

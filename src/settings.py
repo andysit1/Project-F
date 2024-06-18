@@ -114,10 +114,14 @@ class MapSettings():
         for layer in surf:
             if layer.name == "spawning_spaces":
                 for obj in layer:
-                    if obj[2] != 0:
+                    if obj[2] == 34:
                         #1/4 spawn rate
                         if randint(0, 4) == 0:
-                            HealthBar(Enemy(self.player, (obj[0] * 16, obj[1] * 16), self.settings.enemy_sprite['fly'].convert_alpha(), 30, self.enemy_grp), self.enemy_grp)
+                            HealthBar(Enemy(self.player, (obj[0] * 16, obj[1] * 16), self.settings.enemy_sprite['fly'].convert_alpha(), 30, 30, self.enemy_grp), self.enemy_grp)
+                    if obj[2] == 19:
+                        #1/4 spawn rate
+                        if randint(0, 4) == 0:
+                            HealthBar(Enemy(self.player, (obj[0] * 16, obj[1] * 16), self.settings.enemy_sprite['wasp'].convert_alpha(), 60, 15, self.enemy_grp), self.enemy_grp)
 
             if layer.name == "interactables":
                 for obj in layer:
