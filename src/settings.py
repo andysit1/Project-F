@@ -16,6 +16,7 @@ from random import randint
 
 current_dir = os.path.dirname(os.path.dirname(__file__))
 uitImagePath = os.path.join(current_dir,"[level tester]", "trial_blue", "unbound_blue.tmx")
+dialoguePath = os.path.join(current_dir, "dialogues", "tree_test.json")
 map_path = uitImagePath
 
 #this should be moved else where
@@ -138,3 +139,101 @@ class MapSettings():
 def init_screen(width: int, height: int) -> pygame.Surface:
     screen = pygame.display.set_mode((width, height), pygame.RESIZABLE)
     return screen
+
+
+import json
+
+
+def read_branch(info : dict):
+    print("INFO", info)
+    print("Current Line:")
+
+    if isinstance(info, list):
+        info = info[0]
+        print("List", info)
+
+    if isinstance(info, int):
+        print("Integer")
+
+    if len(info) > 1:
+        print("-------------------------")
+        for dialogue in info:
+            print(dialogue)
+
+    try:
+        for key in info.keys():
+            if not isinstance(info[key], dict):
+                read_branch(info[key])
+    except:
+        print("Finished or Error")
+
+
+def read_json_tree(info : dict):
+    options = info.keys()
+    print("All options", options)
+    for key in info.keys():
+        print(key, info[key])
+        read_json_tree(info[key]['children'])
+
+
+
+'''
+    1.) Create a function to take a node and when hit/triggered then it will call
+    the tree to get the next iterations of questions. I ideally we need to check two cases
+
+        if childen > 1
+            then we display options ie user input
+
+        if childen == 1
+            queue/get the next input
+
+        if no childen
+            do nothing since the queue empty it sell
+'''
+
+def get_dialogue(nid : int):
+    #2 is the children and + ranch combination.
+    childs : Node = tree.children(nid=nid + 1)
+
+    for child in childs:
+        if child.tag != "Node":
+            print(child.tag, childs)
+
+        if child.tag == "Node":
+            get_dialogue(child.identifier)
+
+        if child.tag == "data":
+            get_dialogue(child.identifier)
+
+
+
+
+if __name__ == "__main__":
+    print("testing dialogue json")
+    with open(dialoguePath) as f:
+        data = json.load(f)
+
+    from modules.treelib_utils import json_2_tree
+    from treelib import Tree, Node
+
+    tree : Tree = json_2_tree(data , verbose=True, listsNodeSymbol=None)
+    tree.show()
+
+    while True:
+        start = tree.get_node(1)
+        # if len(child) > 2:
+        #     print("Wrong layer")
+        #     print(child)
+        #     break
+
+
+        get_dialogue(1)
+                #pick here...
+
+        break
+
+
+    # read_json_tree(data)
+
+
+

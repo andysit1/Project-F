@@ -24,7 +24,6 @@ There are two types of Dialogues in game one where we have
     Originally we could just use the tree nodes and see if the tree nodes child > 1.
 '''
 
-
 from pydantic import BaseModel, Field
 from typing import List, Optional
 
@@ -44,8 +43,6 @@ class TreeNodeDialogueJSON(BaseModel):
 
     def add_child_node(self, node):
       self.child_dialogue.append(node)
-
-
 
     def on_load_json(self, filename):
       pass
@@ -75,6 +72,7 @@ example3_dialogue = DialogueJSON(
 )
 
 dia3 = DialogueJSON(
+    id=4,
     text="let's go down a level",
     speaker="Alice",
 )
@@ -239,28 +237,27 @@ class DialogueDisplayEngine():
 
 
 if __name__ == "__main__":
-  print("Testing DialogueJson Implementation")
-  print(node1.model_dump_json())
+  # print("Testing DialogueJson Implementation")
+  # print(node1.model_dump_json())
 
-  # print('Testing Tree Lib')
-  # tree = Tree()
-  # tree1= Tree()
+  print('Testing Tree Lib')
+  tree = Tree()
 
-  # tree.create_node("Start", "start", data="this is the start of a dial")
-  # tree.create_node("No", "no", parent="start")
-  # tree.create_node("4", "4", parent="no")
-  # tree.create_node("5", "5", parent="no")
-  # tree.create_node("6", "6", parent="no")
+  tree.create_node("Start", "start", data="this is the start of a dial")
+  tree.create_node("No", "no", parent="start")
+  tree.create_node("4", "4", parent="no")
+  tree.create_node("5", "5", parent="no")
+  tree.create_node("6", "6", parent="no")
 
-  # tree1.create_node("Yes", "yes")
-  # tree1.create_node("1", "1", parent="yes")
-  # tree1.create_node("2", "2", parent="yes")
-  # tree1.create_node("3", "3", parent="yes")
+  tree.create_node("Yes", "yes", parent="start")
+  tree.create_node("1", "1", parent="yes")
+  tree.create_node("2", "2", parent="yes")
+  tree.create_node("3", "3", parent="yes")
 
 
-  # print(tree.show(stdout=False))
-  # print(tree1.show(stdout=False))
-
+  print(tree.show(stdout=False))
+  tree.save2file("tree_test.txt")
+  print(tree.to_json(with_data=True))
 
   # print('Dialogue System Testing')
   # q : Queue[Tree]= Queue()
