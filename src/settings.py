@@ -35,13 +35,25 @@ class MapState(State):
         self.walls = walls
         self.interactable = interactable
 
-
         self.group.add(self.player)
         self.group.add(self.enemy_grp)
+
+        self.is_map_toggle : bool = True
+
+    def set_toggle(self):
+        self.is_map_toggle = not self.is_map_toggle
+
 
     def on_draw(self, surface, center):
         self.group.center(value=center)
         self.group.draw(surface=surface)
+
+        if self.is_map_toggle:
+            self.map_layer.zoom = 0.5
+
+            self.group.center((SCREEN[0] // 2, SCREEN[1] // 2))
+            self.group.draw(surface=surface)
+
 
     def on_update(self, delta):
         self.group.update(delta)
