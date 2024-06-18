@@ -100,7 +100,7 @@ class DialogueState(Tree):
     return self.dialogue.is_done
 
 #queue ds
-class DialogueStateMachcine():
+class DialogueStateMachine():
   def __init__(self):
     self.q : Queue[DialogueState] = Queue()
 
@@ -128,7 +128,7 @@ class DialogueStateMachcine():
 class DialogueDisplayEngine():
   def __init__(self, engine) -> None:
     self.engine : DisplayEngine = engine
-    self.dialogue_machine = DialogueStateMachcine()
+    self.dialogue_machine = DialogueStateMachine()
     self.machine = _DialogueStateMachine()
 
   def set_current(self, state : DialogueState):
@@ -220,7 +220,7 @@ DState
   Represents the text in the given box...
   Might need to have auto scaling for amount of text
 
-Machcine from state_machine
+Machine from state_machine
   Change to adapt a queue datastructure since we dont want to change dialogue rightawhile
   else it might look janky and probably easier to do a queue anyways since we can queue nodes
   together based on story
