@@ -97,7 +97,7 @@ class MapSettings():
 
         self.pos : int = 0
         self.walls = []
-        self.interactabe = []
+        self.interactable = []
         self.maps = {}
         self.load_map("base", map_path)
 
@@ -122,7 +122,7 @@ class MapSettings():
             if layer.name == "interactables":
                 for obj in layer:
                     if obj[2] != 0:
-                        self.interactabe.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
+                        self.interactable.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
 
 
             if layer.name == "wall_collision":
@@ -131,7 +131,7 @@ class MapSettings():
                         self.walls.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
 
         self.maps = {
-            name : MapState(TiledMapData(surf), self.walls, self.interactabe, self.player, self.enemy_grp)
+            name : MapState(TiledMapData(surf), self.walls, self.interactable, self.player, self.enemy_grp)
         }
 
 
