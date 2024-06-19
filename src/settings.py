@@ -40,20 +40,31 @@ class MapState(State):
 
         self.is_map_toggle : bool = True
 
+        #MINI MAP INIT
+        self.mini_group : PyscrollGroup = PyscrollGroup(map_layer=self.map_layer, default_layer=1)
+        self.mini_group.add(self.player)
+
+        self.mini_map = pygame.Surface((SCREEN[0], SCREEN[1]))
+        self.mini_map.set_alpha(220)
+        self.mini_map.set_colorkey((0,0,0))
+
+
+
+
     def set_toggle(self):
         self.is_map_toggle = not self.is_map_toggle
 
-
-    def on_draw(self, surface, center):
+    def on_draw(self, surface : pygame.Surface, center):
+        self.map_layer.zoom = 5
         self.group.center(value=center)
         self.group.draw(surface=surface)
 
         if self.is_map_toggle:
-            self.map_layer.zoom = 0.5
-
-            self.group.center((SCREEN[0] // 2, SCREEN[1] // 2))
-            self.group.draw(surface=surface)
-
+            #Note: we should limit the player movements at this point so they cant just play in a more zoomed out fov
+            self.map_layer.zoom = 2
+            self.mini_group.center(value=center)
+            self.mini_group.draw(surface=self.mini_map)
+            surface.blit(self.mini_map, (10, 10))
 
     def on_update(self, delta):
         self.group.update(delta)
