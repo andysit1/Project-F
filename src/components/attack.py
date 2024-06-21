@@ -12,7 +12,7 @@ class SweepAttackSprite(Moving_Sprite):
         self.vertical_surface = pg.Surface([self.attack_height, self.attack_width])
         self.attack_sequence = 0  # Track the current attack sequence stage
         self.attack_sprite = AttackSprite(focus, *groups)
-        self.attack_timeout_timer = Timer(threshold=10)# Frames before the sequence resets (5 seconds at 144 FPS)
+        self.attack_timeout_timer = Timer(threshold=5) # amount of seconds before times out
 
 
 
