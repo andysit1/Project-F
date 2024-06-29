@@ -121,9 +121,10 @@ class MapSettings():
 
         self.pos : int = 0
         self.walls = []
-        self.interactabe = []
+        self.interactables = []
         self.maps = {}
         self.load_map("base", map_path)
+        self.load_map("next_map", map_path)
 
     def load_all_maps(self):
         #this will loop through a file in the future and load all maps...
@@ -146,7 +147,7 @@ class MapSettings():
             if layer.name == "interactables":
                 for obj in layer:
                     if obj[2] != 0:
-                        self.interactabe.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
+                        self.interactables.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
 
 
             if layer.name == "wall_collision":
@@ -154,9 +155,13 @@ class MapSettings():
                     if obj[2] != 0:
                         self.walls.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
 
-        self.maps = {
-            name : MapState(TiledMapData(surf), self.walls, self.interactabe, self.player, self.enemy_grp)
-        }
+
+        # i have to use interactables as the name as the unbounded blue uses this variable. I forgot is it causes problems else where
+        # got to ask luca later to make sure this grammar mistake won't cause issues in the future
+
+        self.maps[name] = MapState(TiledMapData(surf), self.walls, self.interactables, self.player, self.enemy_grp)
+
+
 
 
 def init_screen(width: int, height: int) -> pygame.Surface:

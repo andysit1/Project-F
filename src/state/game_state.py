@@ -46,6 +46,9 @@ class GameState(State):
     self.camera_view = Camera(self.player)
     self.particle_gen = ParticleGenerator()
 
+
+
+    #THIS must be moved to player since when map states are swaped we lose the group and our attacks box is lost
     self.attack_sprite_test = AttackSprite(self.player, self.map_machine.current.group)
     self.attack_sweep = SweepAttackSprite(self.player, self.map_machine.current.group)
 
@@ -65,8 +68,10 @@ class GameState(State):
     self.dialogue_engine : DialogueDisplayEngine = DialogueDisplayEngine(self.engine)
 
 
-
-  #we need a function to make a new tile map to swap all the values
+  #changes the player position and next map state...
+  def on_swap_map_state(self):
+    self.map_machine.next_state = self.map_settings.maps.get("next_map")
+    self.map_machine.next_state.player.set_player_pos(pg.Vector2((100, 600)))
 
 
   # What is done on each frame when drawn
@@ -99,9 +104,7 @@ class GameState(State):
       elif event.key == pg.K_0:
         self.dialogue_machine.current = True
       elif event.key == pg.K_9:
-        self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state)
-        self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state1)
-
+        self.on_swap_map_state()
       elif event.key == pg.K_ESCAPE:
         self.dialogue_engine.set_current(None)
 
@@ -109,17 +112,22 @@ class GameState(State):
   def on_update(self, delta):
     self.dt = delta
 
-    #checks if there's a new update for next state
+    self.map_machine.update() #checks for new map
+
+    #checks if there's a new update for current state
     self.map_machine.current.on_update(delta)
+
+
+
+    #player specific dialogue
+    if self.map_machine.current.player.feet.collidelist(self.map_machine.current.interactable) > -1:
+      self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state)
 
     #checks if sprite.feet is colliding with wall tiles
     for sprite in self.map_machine.current.group.sprites():
       try:
         if sprite.feet.collidelist(self.map_machine.current.walls) > -1:
             sprite.move_back(delta)
-
-        if sprite.feet.collidelist(self.map_machine.current.interactable) > -1:
-            self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state)
       except:
         pass
 
