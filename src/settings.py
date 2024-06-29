@@ -156,8 +156,8 @@ class MapSettings():
                         self.walls.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
 
 
-        # i have to use interactables as the name as the unbounded blue uses this variable. I forgot is it causes problems else where
-        # got to ask luca later to make sure this grammar mistake won't cause issues in the future
+        # i have to use interactables since it's the same in the tmx file. right now this is probably the only known grammar issue in the files
+        # will fix in next update since 
 
         self.maps[name] = MapState(TiledMapData(surf), self.walls, self.interactables, self.player, self.enemy_grp)
 
