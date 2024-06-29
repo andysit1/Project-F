@@ -38,7 +38,7 @@ class MapState(State):
         self.group.add(self.player)
         self.group.add(self.enemy_grp)
 
-        self.is_map_toggle : bool = True
+        self.is_map_toggle : bool = False
 
         #MINI MAP INIT
         self.mini_group : PyscrollGroup = PyscrollGroup(map_layer=self.map_layer, default_layer=1)
@@ -165,30 +165,6 @@ def init_screen(width: int, height: int) -> pygame.Surface:
 
 
 import json
-
-
-def read_branch(info : dict):
-    print("INFO", info)
-    print("Current Line:")
-
-    if isinstance(info, list):
-        info = info[0]
-        print("List", info)
-
-    if isinstance(info, int):
-        print("Integer")
-
-    if len(info) > 1:
-        print("-------------------------")
-        for dialogue in info:
-            print(dialogue)
-
-    try:
-        for key in info.keys():
-            if not isinstance(info[key], dict):
-                read_branch(info[key])
-    except:
-        print("Finished or Error")
 
 
 def read_json_tree(info : dict):
