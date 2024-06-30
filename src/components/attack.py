@@ -32,18 +32,18 @@ class SweepAttackSprite(Moving_Sprite):
         elif self.attack_sequence == 2:
             self.attack_sprite.perform_smash_attack(groups)
             self.reset_sequence()
-            
+
 
     def perform_attack(self, groups : pg.sprite.Group):
         # Check for collision with enemies
         hit_list = pg.sprite.spritecollide(self, group=groups, dokill=False)
         for enemy in hit_list:
             enemy.hurt_enemy(5)  # Apply damage
-            
+
     def check_attack_timeout(self):
         if self.attack_timeout_timer.is_triggered():
             self.reset_sequence()
-    
+
     def reset_sequence(self):
         self.attack_sequence = 0
         self.attack_timeout_timer.stop()
@@ -61,6 +61,10 @@ class AttackSprite(Moving_Sprite):
         self.attack_height = 7
         self.horizontal_surface = pg.Surface([self.attack_width, self.attack_height])
         self.vertical_surface = pg.Surface([self.attack_height, self.attack_width])
+
+    def reinit_hitbox(self, width, height):
+        self.horizontal_surface = pg.Surface((width, height))
+        self.vertical_surface = pg.Surface((height, width))
 
 
     def perform_tongue(self, groups : pg.sprite.Group):
@@ -84,6 +88,32 @@ class AttackSprite(Moving_Sprite):
 
     def update(self, dt):
         return super().update(dt)
+
+
+class PierceGrappleAttack(AttackSprite):
+    def __init__(self, focus, *groups) -> None:
+        super().__init__(focus, *groups)
+        self.attack_width = 100
+        self.reinit_hitbox(self.attack_width, self.attack_height)
+
+        self.distance = 0
+
+
+    def get_pierce_endpoint(self) -> float:
+        return pg.math.lerp(0, self.attack_width, self.distance)
+
+
+    #not updating the distance until we change from vertical to horizonal...
+    def update(self, dt):
+
+        self.distance += 0.1 * dt
+        if self.distance >= 1:
+            self.distance = 0
+        else:
+            endpoint = self.get_pierce_endpoint()
+            self.reinit_hitbox(endpoint, self.attack_height)   #the size of the tongue never changes
+            super().update(dt)
+
 
 
 class AttackHandler:

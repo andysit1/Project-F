@@ -43,7 +43,12 @@ class Player(pg.sprite.Sprite):
         #feet variable is used for wall collisions
         self.feet = pg.Rect(self.pos.x, self.pos.y, self.rect.width * 0.5, 8)
         self._old_position = None
-        
+
+
+    #setter functions we should have..
+    def set_player_pos(self, pos : pg.Vector2) -> None:
+        self.pos = pos
+
     # Handles player actions based on key presses
     def handle_event(self, event, dt):
 
@@ -137,7 +142,7 @@ class Player(pg.sprite.Sprite):
             self.direction = self.keypressed[0]
             if self.direction == "up":
                 self.image = self.up
-            elif self.direction == "down": 
+            elif self.direction == "down":
                 self.image = self.down
             elif self.direction == "right":
                 self.image = self.right

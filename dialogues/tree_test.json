@@ -1,0 +1,60 @@
+{
+    "Node": {
+      "children": [
+        {
+          "Node": {
+            "children": [
+              {
+                "Node": {
+                  "children" : [
+                    {
+                        "Node": {
+                            "children" : [],
+                            "data" : "Hi Andy"
+                        }
+                    }
+                  ],
+                    "data": "Lets go to the school"
+                }
+              },
+              {
+                "Node": {
+                  "data": "Lets go to the pool"
+                }
+              },
+              {
+                "Node": {
+                  "data": "Lets go to the beach"
+                }
+              }
+            ],
+            "data": "No"
+          }
+
+        },
+        {
+          "Node": {
+            "children": [
+              {
+                "Node": {
+                  "data": "Lets go to the gym"
+                }
+              },
+              {
+                "Node": {
+                  "data": "Lets go to the resturant"
+                }
+              },
+              {
+                "Node": {
+                  "data": "Lets go to the zoo"
+                }
+              }
+            ],
+            "data": "Yes"
+          }
+        }
+      ],
+      "data": "this is the start of a dial"
+    }
+}
