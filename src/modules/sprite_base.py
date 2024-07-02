@@ -82,6 +82,7 @@ class Moving_Sprite(Base_Sprite):
     self.reference_points['up'] = (current_position[0], current_position[1] - self.offset)
     self.reference_points['down'] = (current_position[0], current_position[1] + self.offset)
 
+
   #helper functions
   def change_vertical_surface(self):
     self.image = self.vertical_surface
@@ -93,13 +94,36 @@ class Moving_Sprite(Base_Sprite):
     self.rect = self.image.get_rect()
     self.horizontal_vertical = 0
 
+
+  #returns -1 or 1 based on the direction of the sprite
+  def get_direction(self):
+    #updates the direction if conflicting logic
+    if self.selected_point == 'left':
+      return -1
+    elif self.selected_point == 'right':
+      return 1
+    elif self.selected_point == 'up':
+      return -1
+    elif self.selected_point == 'down':
+      return 1
+    else:
+      raise TypeError("self.selected_point has a incorrect direction type {}.".format(self.selected_point))
   #changes the surface base on what we need
   def update_surface_directionality(self):
     self.selected_point = self.focus.direction
+
+    #updates the direction if conflicting logic
     if self.selected_point in ('left', 'right') and self.horizontal_vertical == 1:
       self.change_horizontal_surface()
     elif self.selected_point in ('up', 'down') and self.horizontal_vertical == 0:
       self.change_vertical_surface()
+
+    #updates the image with newest version if no changes
+    elif self.selected_point in ('left', 'right') and self.horizontal_vertical == 0:
+      self.image = self.horizontal_surface
+    elif self.selected_point in ('up', 'down') and self.horizontal_vertical == 1:
+      self.image = self.vertical_surface
+
 
   #updates the direction of the attacks
   def align(self):
@@ -109,6 +133,7 @@ class Moving_Sprite(Base_Sprite):
       self.rect.midleft = self.pos_rect.midleft
     elif self.selected_point == "left":
       self.rect.midright = self.pos_rect.midright
+      self.image = pg.transform.flip(self.image, flip_x=True, flip_y=False)
     elif self.selected_point == "up":
       self.rect.midbottom = self.pos_rect.midtop
     elif self.selected_point == "down":
@@ -125,6 +150,7 @@ class Moving_Sprite(Base_Sprite):
 
   def update(self, dt):
     self.update_sprites_directions_and_reference_points()
+
 
 
 
