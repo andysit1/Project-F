@@ -8,7 +8,6 @@
 
 from typing import Any
 import pygame as pg
-from modules.state_machine import Machine
 
 
 '''
