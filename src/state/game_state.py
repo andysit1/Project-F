@@ -9,7 +9,7 @@ from components.dialogue import Dialogue, DialogueDisplayEngine, DialogueState
 from components.camera import Camera
 from settings import Settings, MapSettings
 from components.particles import ParticleGenerator
-from components.attack import PierceGrappleAttack
+from components.attack import PierceGrappleAttack, AttackSprite
 from components.attack import SweepAttackSprite
 from modules.state_machine import Machine
 
@@ -47,10 +47,12 @@ class GameState(State):
     self.particle_gen = ParticleGenerator()
 
     #THIS must be moved to player since when map states are swaped we lose the group and our attacks box is lost
-    self.attack_sprite_test = PierceGrappleAttack(self.player, self.map_machine.current.group)
+    # self.attack_sprite_test = PierceGrappleAttack(self.player, self.map_machine.current.group)
+    self.attack_sprite_test = AttackSprite(self.player, self.map_machine.current.group)
+
     self.attack_sweep = SweepAttackSprite(self.player, self.map_machine.current.group)
 
-  
+
     self.dialogue = Dialogue()
     self.dialogue_machine = Machine()
 
