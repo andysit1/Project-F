@@ -1,6 +1,9 @@
 import pygame as pg
 from settings import Settings
 from modules.clock import Timer
+
+
+
 from modules.sprite_base import Moving_Sprite
 
 class SweepAttackSprite(Moving_Sprite):
@@ -73,7 +76,7 @@ class AttackSprite(Moving_Sprite):
         for enemy in hit_list:
             if enemy.swallowable:
                 enemy.kill()
-                # TODO: add hp to player
+
             else:
                 try:
                     enemy.hurt_enemy(3)  # Apply damage
@@ -89,7 +92,7 @@ class AttackSprite(Moving_Sprite):
     def update(self, dt):
         return super().update(dt)
 
-
+#paused
 class PierceGrappleAttack(AttackSprite):
     def __init__(self, focus, *groups) -> None:
         super().__init__(focus, *groups)
