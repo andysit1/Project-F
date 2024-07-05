@@ -11,7 +11,7 @@ def main():
     # Initializes all imported pygame modules
     pygame.init()
     # Start the game loop
-    engine = DisplayEngine('[Dev] Froggooo', 144, SCREEN[0], SCREEN[1])
+    engine = DisplayEngine('[Dev] Froggooo', 144, 500, 500)
     # Start the game loop with the initial state set to LoginState
     engine.run(DevState(engine))
 
