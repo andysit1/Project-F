@@ -2,7 +2,7 @@ class Timer:
     def __init__(self, threshold: int):
         self.threshold = threshold
         self.elapsed_time = 0
-        self.is_active = True
+        self.is_active = False
 
 
     def update(self, dt: int):
