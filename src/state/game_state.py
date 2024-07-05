@@ -82,12 +82,17 @@ class GameState(State):
     view = -self.camera_view.viewpointPosition() + self.player.pos
     self.map_machine.current.on_draw(self.engine.surface, view)
 
+
+    world_to_camera = self.map_machine.current.map_layer.translate_points
+    self.player.on_draw_player_sprites(self.engine.surface, world_to_camera)
+
     #draws the ui onto the camera surface so it doesn't get effected by the offset
     self.ui.on_draw(self.engine.surface)
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
 
     if self.dialogue_machine.current:
       self.dialogue.draw(self.engine.surface)
+
 
     self.dialogue_engine.draw()
 
