@@ -20,6 +20,7 @@ dialoguePath = os.path.join(current_dir, "dialogues", "tree_test.json")
 map_path = uitImagePath
 
 #this should be moved else where
+
 class MapState(State):
     def __init__(self, data, walls, interactable, player, enemy_grp):
 
@@ -39,7 +40,6 @@ class MapState(State):
         self.group.add(self.enemy_grp)
 
         self.is_map_toggle : bool = False
-
         #MINI MAP INIT
         self.mini_group : PyscrollGroup = PyscrollGroup(map_layer=self.map_layer, default_layer=1)
         self.mini_group.add(self.player)
@@ -50,9 +50,15 @@ class MapState(State):
 
 
 
+    #TODO/BUG might cause problems with self.player
+    def set_player(self, player):
+        self.player = player
+        self.mini_group.add(self.player)
+
 
     def set_toggle(self):
         self.is_map_toggle = not self.is_map_toggle
+
 
     def on_draw(self, surface : pygame.Surface, center):
         self.map_layer.zoom = 5
@@ -157,7 +163,7 @@ class MapSettings():
 
 
         # i have to use interactables since it's the same in the tmx file. right now this is probably the only known grammar issue in the files
-        # will fix in next update since 
+        # will fix in next update since
 
         self.maps[name] = MapState(TiledMapData(surf), self.walls, self.interactables, self.player, self.enemy_grp)
 
