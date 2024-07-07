@@ -31,7 +31,7 @@ class DevState(State):
   def on_draw(self):
     self.engine.surface.fill((255, 255, 255))
     self.spites.draw(self.engine.surface)
-    self.player.on_draw_player_sprites(self.engine.surface)
+    self.player.on_draw_player_sprites(self.engine.surface, None)
 
   # Updates relevant game state information
   def on_update(self, delta):
