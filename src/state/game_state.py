@@ -117,7 +117,7 @@ class GameState(State):
       try:
         if sprite.feet.collidelist(self.map_machine.current.walls) > -1:
             sprite.move_back(delta)
-
+            
         if sprite.feet.collidelist(self.map_machine.current.interactable) > -1:
             self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state)
       except:

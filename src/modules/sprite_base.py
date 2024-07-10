@@ -27,7 +27,7 @@ class Base_Sprite(pg.sprite.Sprite):
     self.image = None
     self.rect = None
 
-  def make_transpart(self):
+  def make_transparent(self):
     self.is_visible = False
     self.image.set_alpha(0)
 
@@ -65,7 +65,7 @@ class Moving_Sprite(Base_Sprite):
     self.rect = self.image.get_rect()
     self.pos_rect = pg.Rect(0, 0, 5, 5)
     self.offset = 15
-    self.horizontal_vertical = 0 #0 - horizontal               #1 - vertical
+    self.horizontal_vertical = 0 #0 - horizontal, #1 - vertical
 
   def set_selected_points(self, direction):
     if direction not in self.reference_points.keys():
