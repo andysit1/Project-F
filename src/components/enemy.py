@@ -33,40 +33,62 @@ class Enemy(pg.sprite.Sprite):
     self.enemy_particles = Particles(self)
     self.feet = pg.Rect(self.pos.x, self.pos.y, self.rect.width * 0.5, 8)
 
-  def update_position(self):
-    self.pos += self.vel
-    self.rect.center = self.pos
-
   def update(self, dt):
+    self.check_swallowable()
+    self.move_to_player(dt)
+    self.avoid_other_enemies(dt)
+    self.apply_velocity()
 
-    # Checks if enemy is swallowable
+  def check_swallowable(self):
     if self.health <= self.max_health / 4:
       self.swallowable = True
 
-    # Moves enemy to player, if in range
-    player_to_enemy_vector = self.player.pos - self.pos
-    player_distance = player_to_enemy_vector.magnitude()
-    if 10 < player_distance < 200:
+  def move_to_player(self, dt):
+    if self.raytrace_to_player():
+      player_to_enemy_vector = self.player.pos - self.pos
       self.vel = player_to_enemy_vector.normalize() * self.speed * dt
     else:
       self.vel = Vector2(0, 0)
+      
+  def raytrace_to_player(self):
+    player_to_enemy_vector = self.player.pos - self.pos
+    player_distance = player_to_enemy_vector.magnitude()
+    if player_distance > 100:
+      return False
 
-    # Moves enemies away from each other, if in range
+    steps = int(player_distance)
+    for i in range(steps):
+      test_pos = self.pos + player_to_enemy_vector.normalize() * i
+      temp_sprite = pg.sprite.Sprite()
+      temp_sprite.rect = pg.Rect(test_pos.x, test_pos.y, 5, 5)
+      pg.draw.rect(self.image, (255, 0, 0), temp_sprite.rect) 
+      group = self.groups()[0]
+      if pg.sprite.spritecollide(temp_sprite, group, False):
+        return False
+
+    return True
+
+  def avoid_other_enemies(self, dt):
     for sprite in self.groups()[0]:
       if sprite is not self and sprite.__class__.__name__ == "Enemy":
         enemy_to_enemy_vector = sprite.pos - self.pos
-        enemy_distance = enemy_to_enemy_vector.magnitude() 
+        enemy_distance = enemy_to_enemy_vector.magnitude()
         if enemy_distance < 10:
           self.vel -= enemy_to_enemy_vector.normalize() * self.speed * dt
 
-    self.update_position()
+  def apply_velocity(self):
+    self.pos += self.vel
+    self.rect.center = self.pos
 
-  def hurt_enemy(self, damage):
-    self.health -= damage
+  def apply_knockback(self):
     knockback_velocity = (self.pos - self.player.pos).normalize() * 10
     self.vel = knockback_velocity
+    
+  def hurt_enemy(self, damage):
+    self.health -= damage
+    self.apply_knockback()
     self.update_position()
-
+    
   def move_back(self, dt):
     pass
 
@@ -77,25 +99,38 @@ class HealthBar(pg.sprite.Sprite):
     self.size_bar_x = focus.size.x + 1
     self.size_bar_y = 2
     self.is_visible = False
-
     self.focus = focus
     self.old_pos = None
     self.health = focus.health
     self.old_health = None
     self.max_health = focus.max_health
     self.swallowable = False
-
     self.move_back = focus.move_back
-    
-    #visual variables...
     self.image = pg.Surface([self.size_bar_x, self.size_bar_y])
     self.image.fill("red")
     self.image.set_alpha(0)
     self.rect = self.image.get_rect(center=self.focus.pos)
 
+  def update(self, dt):
+    self.update_position()
+    self.update_visibility()
+    self.check_health_changes()
+
   def update_position(self):
     self.rect.center = self.focus.pos
     self.health = self.focus.health
+
+  def update_visibility(self):
+    if self.old_pos == self.focus.pos:
+      self.make_transparent()
+    else:
+      self.make_visible()
+
+  def check_health_changes(self):
+    if self.old_health != self.health:
+      self.on_health_changes()
+    self.old_pos = self.focus.pos.copy()
+    self.old_health = self.health
 
   def make_transparent(self):
     self.is_visible = False
@@ -109,32 +144,17 @@ class HealthBar(pg.sprite.Sprite):
     if self.health <= self.max_health / 4:
       self.swallowable = True
       self.image.fill("yellow")
-
     if self.health < 0:
       self.focus.kill()
       self.kill()
+    self.scale_health_bar()
 
-    health_to_maxhealth_ratio = self.size_bar_x * (self.health / self.max_health)
+  def scale_health_bar(self):
+    health_ratio = self.size_bar_x * (self.health / self.max_health)
     try:
-      self.image = pg.transform.scale(self.image, [health_to_maxhealth_ratio, self.size_bar_y])
+      self.image = pg.transform.scale(self.image, [health_ratio, self.size_bar_y])
     except:
       pass
-    
+
   def hurt_enemy(self, damage):
     self.health -= damage
-
-  def update(self, dt):
-    self.update_position()
-
-    is_same_position = self.old_pos == self.focus.pos
-    is_different_health = self.old_health != self.health
-    if is_same_position:
-      self.make_transparent()
-    else:
-      self.make_visible()
-
-    if is_different_health:
-      self.on_health_changes()
-
-    self.old_pos = self.focus.pos.copy()
-    self.old_health = self.health
