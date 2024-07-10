@@ -5,7 +5,6 @@ from modules.state_machine import State, Machine
 from components.player import Player
 from components.enemy import Enemy, HealthBar
 from components.ui import Interface
-from components.dialogue import Dialogue, DialogueDisplayEngine, DialogueState
 from components.camera import Camera
 from settings import Settings, MapSettings
 from components.particles import ParticleGenerator
@@ -44,87 +43,52 @@ class GameState(State):
 
     self.ui = Interface(self.player)
     self.camera_view = Camera(self.player)
-    self.particle_gen = ParticleGenerator()
+    self.particle_gen = ParticleGenerator() #TODO update the
 
+    #THIS must be moved to player since when map states are swaped we lose the group and our attacks box is lost
+    # self.attack_sprite_test = PierceGrappleAttack(self.player, self.map_machine.current.group)
     self.attack_sprite_test = AttackSprite(self.player, self.map_machine.current.group)
+
     self.attack_sweep = SweepAttackSprite(self.player, self.map_machine.current.group)
 
-    self.dialogue = Dialogue()
-    self.dialogue_machine = Machine()
 
 
-    self.dialogue_test_state = DialogueState("This is just an example text to use with gradual typing.")
-    self.dialogue_test_state.create_node("Hello", "root")
-    self.dialogue_test_state.create_node("Go to town", "1-1", "root")
-    self.dialogue_test_state.create_node("Go to house", "1-2", "root")
+  #changes the player position and next map state...
+  def on_swap_map_state(self):
+    self.map_machine.next_state = self.map_settings.maps.get("next_map")
+    self.map_machine.next_state.player.set_player_pos(pg.Vector2((100, 600)))
 
-    self.dialogue_test_state1 = DialogueState("This is just an another example to use with gradual typing.")
-    self.dialogue_test_state1.create_node("Hello", "root")
-    self.dialogue_test_state1.create_node("Go to town", "1-1", "root")
-    self.dialogue_test_state1.create_node("Go to house", "1-2", "root")
-    self.dialogue_engine : DialogueDisplayEngine = DialogueDisplayEngine(self.engine)
-
-
-
-  #we need a function to make a new tile map to swap all the values
-
-
-  # What is done on each frame when drawn
   def on_draw(self):
-    #DRAWING CAMERA VIEW
-    #this draw the camera surface based on the focus on the position of player
     view = -self.camera_view.viewpointPosition() + self.player.pos
     self.map_machine.current.on_draw(self.engine.surface, view)
 
+    world_to_camera = self.map_machine.current.map_layer.translate_points
+    self.player.on_draw_player_sprites(self.engine.surface, world_to_camera)
+    
     #draws the ui onto the camera surface so it doesn't get effected by the offset
     self.ui.on_draw(self.engine.surface)
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
 
-    if self.dialogue_machine.current:
-      self.dialogue.draw(self.engine.surface)
-
-    self.dialogue_engine.draw()
-
-
-  # Handles events (ie. key presses)
   def on_event(self, event):
-    # Calls player's handle_event function (player's movements and attacks)
+    #handles the logic of player to player events
     self.player.handle_event(event=event, dt=self.dt)
-    # If space is pressed, player attacks enemies
+
+    #handles gamestate to player interactions
     if event.type == pg.KEYDOWN:
       if event.key == pg.K_SPACE:
-        self.attack_sweep.handle_attack_input(self.enemy_group)
+        self.player.attack_sweep.handle_attack_input(self.enemy_group)
       elif event.key == pg.K_c:
-        self.attack_sprite_test.perform_tongue(self.enemy_group)
-      elif event.key == pg.K_0:
-        self.dialogue_machine.current = True
-      elif event.key == pg.K_9:
-        self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state)
-        self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state1)
+        self.player.attack_sprite_test.perform_tongue(self.enemy_group)
 
-      elif event.key == pg.K_ESCAPE:
-        self.dialogue_engine.set_current(None)
+
+  def update_sprites_collisions_to_walls(self, dt):
+    return [sprite.move_back(dt) for sprite in self.map_machine.current.group.sprites() if getattr(sprite, "feet", None) and sprite.feet.collidelist(self.map_machine.current.walls) > -1]
+
 
   # Updates relevant game state information
   def on_update(self, delta):
     self.dt = delta
-
-    #checks if there's a new update for next state
+    self.map_machine.update()
     self.map_machine.current.on_update(delta)
-
-    #checks if sprite.feet is colliding with wall tiles
-    for sprite in self.map_machine.current.group.sprites():
-      try:
-        if sprite.feet.collidelist(self.map_machine.current.walls) > -1:
-            sprite.move_back(delta)
-
-        if sprite.feet.collidelist(self.map_machine.current.interactable) > -1:
-            self.dialogue_engine.dialogue_machine.add_dialogue(self.dialogue_test_state)
-      except:
-        pass
-
+    self.update_sprites_collisions_to_walls(delta)
     self.ui.on_update()
-    if self.dialogue_machine.current:
-      self.dialogue.update(delta)
-
-    self.dialogue_engine.update(delta=delta)
