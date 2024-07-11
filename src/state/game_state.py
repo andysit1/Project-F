@@ -92,8 +92,10 @@ class GameState(State):
   Choice is up to you.
   """
 
-  #you can probably optimize these calls to check for 
+  #you can probably optimize these calls to check for
 
+
+  
 
   def is_tongue_collisions_to_anything_rectable(self, collisions_rect : list[pg.Rect]) -> list[pg.Rect]:
     if self.player.is_tongue_out():

@@ -17,7 +17,10 @@ from random import randint
 current_dir = os.path.dirname(os.path.dirname(__file__))
 uitImagePath = os.path.join(current_dir,"[level tester]", "trial_blue", "unbound_blue.tmx")
 dialoguePath = os.path.join(current_dir, "dialogues", "tree_test.json")
+
 map_path = uitImagePath
+green_map_path = os.path.join(current_dir,"[level tester]", "trial green", "unbound_green.tmx")
+
 
 #this should be moved else where
 
@@ -130,7 +133,7 @@ class MapSettings():
         self.interactables = []
         self.maps = {}
         self.load_map("base", map_path)
-        self.load_map("next_map", map_path)
+        # self.load_map("green", green_map_path)
 
     def load_all_maps(self):
         #this will loop through a file in the future and load all maps...
