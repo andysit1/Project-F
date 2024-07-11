@@ -12,6 +12,7 @@ from components.attack import AttackSprite
 from components.attack import SweepAttackSprite
 from modules.state_machine import Machine
 
+
 '''
   --- GameState class ---
   This class is responsible for managing the game state, which includes everything currently loaded into the game.
@@ -64,7 +65,7 @@ class GameState(State):
 
     world_to_camera = self.map_machine.current.map_layer.translate_points
     self.player.on_draw_player_sprites(self.engine.surface, world_to_camera)
-    
+
     #draws the ui onto the camera surface so it doesn't get effected by the offset
     self.ui.on_draw(self.engine.surface)
     pg.draw.circle(self.engine.surface, "white", (int(self.player.pos.x), int(self.player.pos.y)), 5)
@@ -85,6 +86,13 @@ class GameState(State):
     return [sprite.move_back(dt) for sprite in self.map_machine.current.group.sprites() if getattr(sprite, "feet", None) and sprite.feet.collidelist(self.map_machine.current.walls) > -1]
 
 
+  #you can probably optimize to check walls within a radius
+  def is_tongue_collisions_to_walls(self):
+    if self.player.is_tongue_out():
+      walls = [wall for wall in self.map_machine.current.walls if wall.collidepoint(self.player.tongue_points[-1]) == True]
+      if len(walls) > 0:
+        return True
+    return False
   # Updates relevant game state information
   def on_update(self, delta):
     self.dt = delta
@@ -92,3 +100,6 @@ class GameState(State):
     self.map_machine.current.on_update(delta)
     self.update_sprites_collisions_to_walls(delta)
     self.ui.on_update()
+
+    if self.is_tongue_collisions_to_walls():
+      print("wall")

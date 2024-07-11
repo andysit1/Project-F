@@ -107,14 +107,17 @@ class Player(pg.sprite.Sprite):
         return False
 
 
-    def traverse_bendy_tongue_path(self):
+    def traverse_bendy_tongue_path(self, is_grapple:bool=False):
         #TODO/BUG optimize this function later, this is really bad code
 
-        frame_skip = pg.math.lerp(2, 6, len(self.tongue_points) / 400)
+        frame_skip = pg.math.lerp(2, 6, len(self.tongue_points) / 400) #on frame change decide how many frames to make gone
         try:
             for i in range(0, int(frame_skip)):
-                self.pos = self.tongue_points.pop(0)
-            self.rect.center = self.pos
+                if is_grapple:
+                    self.pos = self.tongue_points.pop(0)
+                    self.rect.center = self.pos
+                else:
+                    self.tongue_points.pop()
         except:
             if len(self.tongue_points) <= 0: #finished traversal
                 self.bendy_timer.stop()
@@ -210,7 +213,7 @@ class Player(pg.sprite.Sprite):
 
     #method to draw the players specific sprites that come with it through each states...
     #can be cosmetics, injuries, or other stuff in future
-    def on_draw_player_sprites(self, surface : pg.Surface, translate_functions : Callable):
+    def on_draw_player_sprites(self, surface : pg.Surface, translate_functions : Callable = None):
         self.player_sprites.draw(surface=surface)
 
         if self.tongue_driver.pos:
