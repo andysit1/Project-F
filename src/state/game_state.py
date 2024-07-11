@@ -86,11 +86,23 @@ class GameState(State):
     return [sprite.move_back(dt) for sprite in self.map_machine.current.group.sprites() if getattr(sprite, "feet", None) and sprite.feet.collidelist(self.map_machine.current.walls) > -1]
 
 
-  #you can probably optimize to check walls within a radius
   def is_tongue_collisions_to_walls(self):
     if self.player.is_tongue_out():
       walls = [wall for wall in self.map_machine.current.walls if wall.collidepoint(self.player.tongue_points[-1]) == True]
       if len(walls) > 0:
+        return True
+    return False
+
+  #you can probably optimize to check walls within a radius
+  def is_tongue_collisions_to_enemys(self) -> bool:
+    if self.player.is_tongue_out():
+      enemys = [enemy for enemy in self.enemy_group if enemy.rect.collidepoint(self.player.tongue_points[-1]) == True]
+      if len(enemys) > 0:
+        print(len(enemys))
+
+
+        #THIS IS WHERE YOU DO THINGS TO ENEMY ie DAMAGE or FREEZE or ANYTHING
+
         return True
     return False
   # Updates relevant game state information
@@ -101,5 +113,7 @@ class GameState(State):
     self.update_sprites_collisions_to_walls(delta)
     self.ui.on_update()
 
+    self.is_tongue_collisions_to_enemys()
     if self.is_tongue_collisions_to_walls():
       print("wall")
+
