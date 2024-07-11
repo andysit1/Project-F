@@ -132,6 +132,10 @@ class Player(pg.sprite.Sprite):
         self.tongue_driver.direction = 0
         self.bendy_timer.reset()
 
+    def stop_bendy_tongue(self):
+        self.tongue_driver.strength = 40 #TODO/BUG make into constant settings variable
+        self.bendy_timer.stop()
+
     def handle_event(self, event, dt):
         self.player_movement(event, dt)
 
@@ -140,8 +144,7 @@ class Player(pg.sprite.Sprite):
                 self.init_tongue_position_direction_timer()
 
         if event.type == pg.KEYUP and event.key == pg.K_c:
-            self.tongue_driver.strength = 40 #TODO/BUG make into constant settings variable
-            self.bendy_timer.stop()
+            self.stop_bendy_tongue()
 
         #dashing
         if event.type == pg.KEYDOWN and event.key == pg.K_z:

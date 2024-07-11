@@ -86,23 +86,32 @@ class GameState(State):
     return [sprite.move_back(dt) for sprite in self.map_machine.current.group.sprites() if getattr(sprite, "feet", None) and sprite.feet.collidelist(self.map_machine.current.walls) > -1]
 
 
-  def is_tongue_collisions_to_walls(self):
+
+  """
+  Yon can use is_tongue_collisions_to_anything_rectable for anything but I think the two functions below make the functions easier to read and isolates the logic better
+  Choice is up to you.
+  """
+
+  #you can probably optimize these calls to check for 
+
+
+  def is_tongue_collisions_to_anything_rectable(self, collisions_rect : list[pg.Rect]) -> list[pg.Rect]:
+    if self.player.is_tongue_out():
+      collisions_rects = [rect for rect in collisions_rect if rect.collidepoint(self.player.tongue_points[-1]) == True]
+      return collisions_rects
+
+  def is_tongue_collisions_to_walls(self) -> bool:
     if self.player.is_tongue_out():
       walls = [wall for wall in self.map_machine.current.walls if wall.collidepoint(self.player.tongue_points[-1]) == True]
       if len(walls) > 0:
         return True
     return False
 
-  #you can probably optimize to check walls within a radius
   def is_tongue_collisions_to_enemys(self) -> bool:
     if self.player.is_tongue_out():
       enemys = [enemy for enemy in self.enemy_group if enemy.rect.collidepoint(self.player.tongue_points[-1]) == True]
       if len(enemys) > 0:
-        print(len(enemys))
-
-
         #THIS IS WHERE YOU DO THINGS TO ENEMY ie DAMAGE or FREEZE or ANYTHING
-
         return True
     return False
   # Updates relevant game state information
@@ -115,5 +124,6 @@ class GameState(State):
 
     self.is_tongue_collisions_to_enemys()
     if self.is_tongue_collisions_to_walls():
-      print("wall")
+      self.player.stop_bendy_tongue()
+
 
