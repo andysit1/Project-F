@@ -17,6 +17,15 @@ from typing import Callable
     update : Updates player information each frame/update
 '''
 
+#player constants
+TONGUE_TURN_STRENGTH: int = 5
+TONGUE_STRENGTH: int = 40
+BENDY_TIMER_DURATION: float = 0.4 # how long it takes to get normal mode -> bendy tongue mode
+TONGUE_APPENDING_TIMER_DURATION: float = 0.3 #time between points we append
+TONGUE_APPENDING_TIMER_IS_ACTIVE: bool = True
+TONGUE_TRAVEL_SPEEDS: int = 10
+settings = Settings()
+
 # Taken from https://github.com/clear-code-projects/pygame-gta2/blob/master/gta2_pygame.py
 class Driver:
     def __init__(self):
@@ -27,8 +36,6 @@ class Driver:
         self.active = True #always increasing speeds...
         self.pos : pg.math.Vector2 = None
         self.strength : int = 40
-
-
 
     def get_rotation(self):
         #direction is always
@@ -47,13 +54,14 @@ class Driver:
 class Player(pg.sprite.Sprite):
     def __init__(self, pos, *groups):
         super().__init__(groups)
-        settings = Settings()
         #import, load, and convert image to Surface, then scale it to 70x70
         self.ui_pfp = settings.character_sprite['ui'].convert_alpha()
         self.up = settings.character_sprite['up'].convert_alpha()
         self.down = settings.character_sprite['down'].convert_alpha()
         self.right = settings.character_sprite['right'].convert_alpha()
         self.left = settings.character_sprite['left'].convert_alpha()
+
+        #TODO make these const at top
         self.image = self.down
         self.keypressed = []
         self.rect = self.image.get_rect(center=pos)
@@ -76,14 +84,18 @@ class Player(pg.sprite.Sprite):
 
 
         #TONGUE VARS
-        self.tongue_turn_strength : int = 5
-        self.tongue_points = []
         self.tongue_driver : Driver = Driver()
+        self.tongue_turn_strength : int = TONGUE_TURN_STRENGTH
+        self.tongue_strength = TONGUE_STRENGTH
+        self.tongue_points = []
         self.tongue_driver.pos = None
-        self.bendy_timer = Timer(0.4)
-        self.tongue_appending_timer = Timer(0.3)
+
+        self.bendy_timer = Timer(BENDY_TIMER_DURATION)
+        self.tongue_appending_timer = Timer(TONGUE_APPENDING_TIMER_DURATION)
+
+        self.tongue_travel_speeds =TONGUE_TRAVEL_SPEEDS
         self.tongue_appending_timer.is_active = True
-        self.tongue_travel_speeds = 10
+
 
         from components.attack import AttackSprite
         from components.attack import SweepAttackSprite
@@ -92,24 +104,31 @@ class Player(pg.sprite.Sprite):
         self.attack_sprite_test = AttackSprite(self, self.player_sprites)
         self.attack_sweep = SweepAttackSprite(self, self.player_sprites)
 
-
-
-
-    #should handle interaction of the tongue ie walls, enemies, and etc.
-    def handle_tongue_collsion(self):
-        # if self.tongue_driver[-1] collides with x group ... then
-        #     do x activity
-        pass
-
     def is_tongue_out(self) -> bool:
         if len(self.tongue_points) > 0:
             return True
         return False
 
+    def stop_bendy_tongue(self):
+        self.tongue_driver.strength = self.tongue_strength #TODO/BUG make into constant settings variable
+        self.bendy_timer.stop()
 
+    def init_tongue_position_direction_timer(self):
+
+        if self.dash_timer > 0: #should not be able to start a tongue mid dash 
+            return
+
+        self.tongue_driver.pos = self.pos.copy() #TODO/BUG if we dash and start the timer it makes the tongue start driving behind the pos
+        self.tongue_driver.forward = self.vel.copy()
+        self.tongue_driver.direction = 0
+        self.bendy_timer.reset()
+        self.vel.x, self.vel.y = 0, 0 #drop the vel to 0 so we dont move when we activity the tongue
+
+    def set_player_pos(self, pos : pg.Vector2) -> None:
+        self.pos = pos
+
+    #TODO/BUG make into constant settings variable
     def traverse_bendy_tongue_path(self, is_grapple:bool=False):
-        #TODO/BUG optimize this function later, this is really bad code
-
         frame_skip = pg.math.lerp(2, 6, len(self.tongue_points) / 400) #on frame change decide how many frames to make gone
         try:
             for i in range(0, int(frame_skip)):
@@ -120,27 +139,48 @@ class Player(pg.sprite.Sprite):
                     self.tongue_points.pop()
         except:
             if len(self.tongue_points) <= 0: #finished traversal
-                self.bendy_timer.stop()
-                self.tongue_points.clear()
+                self.stop_bendy_tongue()
 
-    def set_player_pos(self, pos : pg.Vector2) -> None:
-        self.pos = pos
+    def tongue_movement(self, dt):
+        keys = pg.key.get_pressed()
+        if keys[pg.K_LEFT]:
+            self.tongue_driver.direction += -self.tongue_turn_strength * dt
+        if keys[pg.K_RIGHT]:
+            self.tongue_driver.direction += self.tongue_turn_strength * dt
 
-    def init_tongue_position_direction_timer(self):
-        self.tongue_driver.pos = self.pos.copy()
-        self.tongue_driver.forward = self.vel #TODO/BUG make this self.vel 1 or 0.. causes issue moving
-        self.tongue_driver.direction = 0
-        self.bendy_timer.reset()
+        self.tongue_driver.direction = pg.math.clamp(self.tongue_driver.direction, -1, 1)
 
-    def stop_bendy_tongue(self):
-        self.tongue_driver.strength = 40 #TODO/BUG make into constant settings variable
-        self.bendy_timer.stop()
+    def __handle_player_image_direction_and_velocity(self, dt):
+      # Changes player image based on direction
+        if (self.vel != (0,0) and self.vel.length() > 0):
+            try:
+                self.direction = self.keypressed[0]
+                if self.direction == "up":
+                    self.image = self.up
+                elif self.direction == "down":
+                    self.image = self.down
+                elif self.direction == "right":
+                    self.image = self.right
+                elif self.direction == "left":
+                    self.image = self.left
+
+                # Normalizes velocity vector in the diagonals (as cant normalize a vector of 0, which happens when not diagonal)
+                self.vel = round(self.vel.normalize() * self.speed * dt, 3)
+            except:
+                pass
+        else:
+            self.keypressed.clear()
+
+
 
     def handle_event(self, event, dt):
-        self.player_movement(event, dt)
+
+        if not self.bendy_timer.is_triggered():
+            self.player_movement(event, dt)
 
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_c:
+
                 self.init_tongue_position_direction_timer()
 
         if event.type == pg.KEYUP and event.key == pg.K_c:
@@ -153,18 +193,9 @@ class Player(pg.sprite.Sprite):
                 self.dash_timer = self.dash_time_length_seconds
                 self.dash_vel = self.vel * 2   #takes the current velocity at that given moment based on key input
 
-    def tongue_movement(self, dt):
-        keys = pg.key.get_pressed()
-        if keys[pg.K_LEFT]:
-            self.tongue_driver.direction += -self.tongue_turn_strength * dt
-        if keys[pg.K_RIGHT]:
-            self.tongue_driver.direction += self.tongue_turn_strength * dt
-
-        self.tongue_driver.direction = pg.math.clamp(self.tongue_driver.direction, -1, 1)
-
-
     # Gets player movement vector based on key presses
     def player_movement(self, event, dt):
+
         if event.type == pg.KEYDOWN:
             if event.key == pg.K_UP:
                 self.vel.y = -self.speed * dt
@@ -208,6 +239,8 @@ class Player(pg.sprite.Sprite):
                 except:
                     pass
 
+        self.__handle_player_image_direction_and_velocity(dt=dt)
+
     #TODO fix player movement in game (sticking to walls)
     def move_back(self, dt: float) -> None:
         self.pos = self._old_position
@@ -241,6 +274,32 @@ class Player(pg.sprite.Sprite):
             if last.distance_to(self.tongue_driver.pos) > 0.5:
                 self.tongue_points.append(self.tongue_driver.pos.copy())
 
+
+    def __handle_tongue_updates(self, dt) -> bool:
+        if not self.tongue_driver.active:
+            self.bendy_timer.update(dt)
+
+        if self.bendy_timer.is_triggered():
+            self.tongue_movement(dt=dt)
+            self.tongue_driver.update(dt)
+            self.tongue_point_appendable()
+            return True
+        elif self.is_tongue_out():
+            self.traverse_bendy_tongue_path()
+            return True
+
+        return False
+
+    def __handle_dash_updates(self, dt) -> bool:
+        self.dash_timer -= 1 * dt
+        if self.dash_timer > 0:
+
+            self.pos += self.dash_vel
+            self.rect.center = self.pos
+            return True
+        return False
+
+
     # Updates player positions based on velocity
     def update(self, dt):
         self._old_position = self.pos.copy()
@@ -257,45 +316,9 @@ class Player(pg.sprite.Sprite):
             3.) when tongue is not moving and tongue is not out, we can just run around
         """
 
-        if self.bendy_timer.is_triggered():
-            self.tongue_movement(dt=dt)
-            self.tongue_driver.update(dt)
-            self.tongue_point_appendable()
-        elif self.is_tongue_out():
-            self.traverse_bendy_tongue_path()
-        else:
+        if not self.__handle_tongue_updates(dt=dt) and  not self.__handle_dash_updates(dt=dt):
+            self.pos += self.vel
+            self.rect.center = self.pos
 
-            if self.dash_timer > 0:
-                self.pos += self.dash_vel
-                self.rect.center = self.pos
-            else:
-                if not self.bendy_timer.is_active:
-
-                    self.pos += self.vel
-                    self.rect.center = self.pos
-
-            # Changes player image based on direction
-            if (self.vel.length() > 0):
-                try:
-                    self.direction = self.keypressed[0]  #TODO/BUG Path Traversal causes issues since we have vel > 0 and no keys pressed.. this is quick fix but not the best...
-                    if self.direction == "up":
-                        self.image = self.up
-                    elif self.direction == "down":
-                        self.image = self.down
-                    elif self.direction == "right":
-                        self.image = self.right
-                    elif self.direction == "left":
-                        self.image = self.left
-                except:
-                    pass
-            else:
-                self.keypressed.clear()
-
-            # Normalizes velocity vector in the diagonals (as cant normalize a vector of 0, which happens when not diagonal)
-            try:
-                self.vel = round(self.vel.normalize() * self.speed * dt, 3)
-            except:
-                pass
-
-        self.dash_timer -= 1 * dt
+        #update timers..
         self.feet.midbottom = self.rect.midbottom
