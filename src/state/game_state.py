@@ -36,8 +36,11 @@ class GameState(State):
     font = pg.font.SysFont('comicsans', 15)  # Initializes font
 
     self.map_settings = MapSettings()        #init map settings
+
+
     self.map_machine = Machine()
     self.map_machine.current = self.map_settings.maps.get("base") #set the first state as base
+    self.green_map_state = self.map_settings.maps.get("green")
 
     self.player = self.map_machine.current.player
     self.enemy_group = self.map_machine.current.enemy_grp
@@ -85,6 +88,8 @@ class GameState(State):
   def update_sprites_collisions_to_walls(self, dt):
     return [sprite.move_back(dt) for sprite in self.map_machine.current.group.sprites() if getattr(sprite, "feet", None) and sprite.feet.collidelist(self.map_machine.current.walls) > -1]
 
+  def update_sprites_collisions_to_interactables(self, dt):
+    return [True for sprite in self.map_machine.current.group.sprites() if getattr(sprite, "feet", None) and sprite.feet.collidelist(self.map_machine.current.interactable) > -1]
 
 
   """
@@ -95,7 +100,7 @@ class GameState(State):
   #you can probably optimize these calls to check for
 
 
-  
+
 
   def is_tongue_collisions_to_anything_rectable(self, collisions_rect : list[pg.Rect]) -> list[pg.Rect]:
     if self.player.is_tongue_out():
@@ -127,5 +132,8 @@ class GameState(State):
     self.is_tongue_collisions_to_enemys()
     if self.is_tongue_collisions_to_walls():
       self.player.stop_bendy_tongue()
+
+    if len(self.update_sprites_collisions_to_interactables(delta)) > 0:
+      self.map_machine.next_state = self.green_map_state
 
 

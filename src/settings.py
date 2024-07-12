@@ -16,10 +16,9 @@ from random import randint
 
 current_dir = os.path.dirname(os.path.dirname(__file__))
 uitImagePath = os.path.join(current_dir,"[level tester]", "trial_blue", "unbound_blue.tmx")
-dialoguePath = os.path.join(current_dir, "dialogues", "tree_test.json")
-
-map_path = uitImagePath
 green_map_path = os.path.join(current_dir,"[level tester]", "trial green", "unbound_green.tmx")
+dialoguePath = os.path.join(current_dir, "dialogues", "tree_test.json")
+map_path = uitImagePath
 
 
 #this should be moved else where
@@ -133,16 +132,22 @@ class MapSettings():
         self.interactables = []
         self.maps = {}
         self.load_map("base", map_path)
-        # self.load_map("green", green_map_path)
+        self.load_map("green", green_map_path)
 
     def load_all_maps(self):
         #this will loop through a file in the future and load all maps...
         #for now we can ignore
         return NotImplemented
 
-    def load_map(self, name, filename) -> None:
-        from components.enemy import Enemy, HealthBar
+    def empty_variables(self):
+        self.pos : int = 0
+        self.walls = []
+        self.interactables = []
 
+    def load_map(self, name, filename) -> None:
+        self.empty_variables() #clear everything before
+
+        from components.enemy import Enemy, HealthBar
         surf = pytmx.load_pygame(filename)
 
         for layer in surf:
@@ -165,10 +170,7 @@ class MapSettings():
                         self.walls.append(pygame.Rect(obj[0] * 16, obj[1] * 16, 16, 16))
 
 
-        # i have to use interactables since it's the same in the tmx file. right now this is probably the only known grammar issue in the files
-        # will fix in next update since
-
-        self.maps[name] = MapState(TiledMapData(surf), self.walls, self.interactables, self.player, self.enemy_grp)
+        self.maps[name] = MapState(TiledMapData(surf), self.walls.copy(), self.interactables.copy(), self.player, self.enemy_grp.copy())
 
 
 
