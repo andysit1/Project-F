@@ -21,6 +21,8 @@ FOR NOW LETS JUST DO CIRCLE GLOW OBJECTS
 
 import pygame as pg
 
+
+
 #fluffy potato code
 def circle_surf(radius, color):
     surf = pg.Surface((radius * 2, radius * 2))
@@ -28,6 +30,21 @@ def circle_surf(radius, color):
     surf.set_colorkey((0, 0, 0))
     return surf
 
+# from pydantic import BaseModel
+# #should never handle the updates of size in here, just pure representation
+# class GlowObjectModel(BaseModel):
+#    loc : pg.Vector2
+#    size : pg.Vector2
+
+   #we can do some sort of validation of objects here in the future incase off screen or whatever edge case
+
+
+from typing import Tuple
+def to_type_vector2(self, coordinates: Tuple[int, int]):
+    if len(coordinates) != 2:
+        raise TypeError("Tuple size is incorrect, not 2")
+
+    return pg.Vector2(coordinates[0], coordinates[1])
 
 class LightingManager():
     def __init__(self):
@@ -41,24 +58,82 @@ class LightingManager():
           self.glow_cache[keys] = circle_surf(keys[0] * 2, (20, 20, 60))
       print(len(self.glow_cache))
 
-    #SET reference to list of rects
-    def set_glow_objects(self, glow_group : list[pg.rect.Rect]):
-      self.light_cache += glow_group
+
+    # def to_rect_glow_object(self, rect_glow_objects : list[pg.Rect]):
+    #    for rect in rect_glow_objects:
+    #       obj = GlowObjectModel(
+    #               rect.center,
+    #               rect.size
+    #             )
+    #       self.light_cache.append(obj)
+
+    # def to_particle_glow_object(self, particle_glow_objects : list[any]):
+    #    for particle in particle_glow_objects:
+    #       obj = GlowObjectModel(
+    #               particle[0][0], particle[0][1],
+    #               particle[]
+    #             )
+    #       self.light_cache.append(obj)
+
+    # def glow_object_ADAPTER(self, glow_objects : list[any]):
+    #   #passing in list[pg.Rect]
+    #   if isinstance(glow_objects, list[pg.Rect]):
+    #      self.to_rect_glow_object(rect_glow_objects=glow_objects)
+
+    #   #passing in Particles
+    #   if len(glow_objects[0]) == 3: #TODO make particle class for now use len of 3 since  # particle = [loc, velocity, timer]
+    #      pass
+
+    def set_rect_glow_objects(self, rect_group : list[pg.Rect]):
+      #adapter here
+      self.light_cache += rect_group
+
       size_of_glow = self.glow_cache.keys()
       #INIT dict keys with new sizes
-      for rect in glow_group:
+      for rect in rect_group:
           if rect.size not in size_of_glow:
             self.glow_cache[rect.size] = None #instead of size we should use a string representing size * color ()
 
       self.create_glow_surface_cache()
       print("size of glow", len(size_of_glow))
+    #SET reference to list of rects
 
+      #adapter here
+    def set_particle_glow_objects(self, particle_group : list[pg.Rect]):
+      self.light_cache += particle_group
+      size_of_glow = self.glow_cache.keys()
+      #INIT dict keys with new sizes
+      # for particle in particle_group:
+
+
+      self.create_glow_surface_cache()
+      print("size of glow", len(size_of_glow))
+    #SET reference to list of rects
+
+    # def set_glow_objects(self, glow_group : list[any]):
+    #   self.create_glow_surface_cache()
+    #   print("size of glow", len(size_of_glow))
     #draw the light surface (
-    def draw(self, surface : pg.Surface):
-      for obj in self.light_cache:
-        self.light_layer.blit(self.glow_cache[obj.size], (obj.centerx - obj.width * 2, obj.centery - obj.height * 2),  special_flags=pg.BLEND_RGB_ADD)
-      surface.blit(self.light_layer, (0, 0))
 
+
+    def draw_rect_glow_objects(self, surface, rects : list[pg.Rect]):
+        for rect_obj in rects:
+          #make it proportional to time is the radius
+          radius = 40
+          surface.blit(circle_surf(radius, (20, 20, 60)), (int(rect_obj[0][0] - radius), int(rect_obj[0][1] - radius)), special_flags=pg.BLEND_RGB_ADD)
+
+
+    def draw(self, surface : pg.Surface , glow_objs : list[any]):
+      if glow_objs:
+        if isinstance(glow_objs, list) and isinstance(glow_objs[0], pg.Rect):
+          self.draw_rect_glow_objects(surface=surface, rects=glow_objs)
+
+        if len(glow_objs[0]) == 3:
+          for particle in glow_objs:
+              radius = particle[2] * 2
+
+              pg.draw.circle(surface, (255, 255, 255), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
+              surface.blit(circle_surf(radius, (20, 20, 60)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags=pg.BLEND_RGB_ADD)
 
 
 """
