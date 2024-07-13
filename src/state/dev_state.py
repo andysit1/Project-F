@@ -41,8 +41,6 @@ class DevState(State):
 
 
   def update_glow_particles(self):
-
-
     mx, my = pg.mouse.get_pos()
     self.particles.append([[mx, my], [random.randint(0, 20) / 10 - 1, -5], random.randint(6, 11)])
 
@@ -62,17 +60,14 @@ class DevState(State):
       self.spites.draw(self.engine.surface)
       self.player.on_draw_player_sprites(self.engine.surface, None)
 
-
       if self.particles:
         self.light_manager.draw(self.engine.surface, self.particles)
 
-      # self.light_manager.draw(self.engine.surface)
+  # self.light_manager.draw(self.engine.surface)
   # Updates relevant game state information
   def on_update(self, delta):
     self.dt = delta
     self.spites.update(delta)
-
-
     self.update_glow_particles()
 
   # Handles events (ie. key presses)

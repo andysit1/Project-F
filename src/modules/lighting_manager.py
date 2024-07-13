@@ -132,6 +132,7 @@ class LightingManager():
           for particle in glow_objs:
               radius = particle[2] * 2
 
+              #setup cache for circle surface... on_init we want to init all the possible radius for the lighting
               pg.draw.circle(surface, (255, 255, 255), [int(particle[0][0]), int(particle[0][1])], int(particle[2]))
               surface.blit(circle_surf(radius, (20, 20, 60)), (int(particle[0][0] - radius), int(particle[0][1] - radius)), special_flags=pg.BLEND_RGB_ADD)
 
