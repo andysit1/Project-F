@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <map version="1.10" tiledversion="1.10.1" orientation="orthogonal" renderorder="right-down" width="60" height="60" tilewidth="16" tileheight="16" infinite="0" nextlayerid="7" nextobjectid="3">
  <editorsettings>
-  <export target="unbound_blue.tmx" format="tmx"/>
+  <export target="dungeon.tmx" format="tmx"/>
  </editorsettings>
- <tileset firstgid="1" source="unbound_blue.tsx"/>
+ <tileset firstgid="1" source="dungeon.tsx"/>
  <tileset firstgid="51" source="../dev/dev-pack.tsx"/>
  <layer id="1" name="floor" width="60" height="60" locked="1">
   <data encoding="csv">
