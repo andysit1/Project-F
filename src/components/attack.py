@@ -16,23 +16,32 @@ class SweepAttackSprite(Moving_Sprite):
         self.attack_sequence = 0  # Track the current attack sequence stage
         self.attack_sprite = AttackSprite(focus, *groups)
         self.attack_timeout_timer = Timer(threshold=5) # amount of seconds before times out
+        self.attack_cooldown_timer = Timer(threshold=1)  
+        self.sequence_cooldown_timer = Timer(threshold=3)  
 
     def handle_attack_input(self, groups : pg.sprite.Group):
-        if self.attack_sequence == 0:
-            self.perform_attack(groups)
-            self.attack_sequence = 1
-            self.attack_timeout_timer.reset()
-            print("Performed first attack.")
+        if self.sequence_cooldown_timer.is_active and not self.sequence_cooldown_timer.is_triggered():
+            print("Sequence cooldown active. Cannot attack.")
+            return
+        if not self.attack_cooldown_timer.is_active or self.attack_cooldown_timer.is_triggered():
 
-        elif self.attack_sequence == 1:
-            self.perform_attack(groups)
-            self.attack_sequence = 2
-            self.attack_timeout_timer.reset()
-            print("Performed second attack.")
+            if self.attack_sequence == 0:
+                self.perform_attack(groups)
+                self.attack_sequence = 1
+                self.attack_timeout_timer.reset()
+                self.attack_cooldown_timer.reset()
+                print("Performed first attack.")
 
-        elif self.attack_sequence == 2:
-            self.attack_sprite.perform_smash_attack(groups)
-            self.reset_sequence()
+            elif self.attack_sequence == 1:
+                self.perform_attack(groups)
+                self.attack_sequence = 2
+                self.attack_timeout_timer.reset()
+                self.attack_cooldown_timer.reset()
+                print("Performed second attack.")
+
+            elif self.attack_sequence == 2:
+                self.attack_sprite.perform_smash_attack(groups)
+                self.reset_sequence()
 
 
     def perform_attack(self, groups : pg.sprite.Group):
@@ -48,10 +57,13 @@ class SweepAttackSprite(Moving_Sprite):
     def reset_sequence(self):
         self.attack_sequence = 0
         self.attack_timeout_timer.stop()
+        self.sequence_cooldown_timer.reset()
         print("Attack sequence reset.")
 
     def update(self, dt):
         self.attack_timeout_timer.update(dt)
+        self.attack_cooldown_timer.update(dt)
+        self.sequence_cooldown_timer.update(dt)
         self.check_attack_timeout()
         return super().update(dt)
 
