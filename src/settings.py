@@ -15,7 +15,7 @@ from settings import SCREEN
 from random import randint
 
 current_dir = os.path.dirname(os.path.dirname(__file__))
-uitImagePath = os.path.join(current_dir,"[level tester]", "trial_blue", "unbound_blue.tmx")
+uitImagePath = os.path.join(current_dir,"[level tester]", "trial_blue", "dungeon.tmx")
 map_path = uitImagePath
 
 #this should be moved else where

@@ -3,7 +3,6 @@
  <tileset firstgid="1" source="grasslands.tsx"/>
  <tileset firstgid="31" source="../dev/dev-pack.tsx"/>
  <tileset firstgid="41" source="../interactables/door.tsx"/>
- <tileset firstgid="64" source="../interactables/door.tsx"/>
  <layer id="2" name="floor" width="60" height="60" offsetx="0.00830417" offsety="-0.004225">
   <data encoding="csv">
 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,
